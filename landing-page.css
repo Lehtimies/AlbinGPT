@@ -1,0 +1,187 @@
+body {
+    background-color: #242424 !important;
+    font-family: "Josefin Sans", sans-serif !important;
+    font-size: 17px !important;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+* {
+    color: #fff;
+    scrollbar-color: #535353;
+}
+
+.button {
+    background-color: inherit;
+    transition-duration: 50ms;
+    border: none;
+    color: inherit;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: inherit;
+}
+
+.button-round {
+    background-color: inherit;
+    transition-duration: 50ms;
+    border: none;
+    color: inherit;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: inherit;
+    border-radius: 12px;
+}
+
+.button:hover, .button-round:hover {
+    background-color: #363636;
+    color: inherit;
+}
+
+.nav-border {
+    border-right: 3px solid #373737;
+}
+
+.z-0 {
+    z-index: 0;
+}
+
+.sidebar-color {
+    background-color: #1a1a1a;
+}
+
+.padding-x-5 {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.padding-x-10 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.padding-x-15 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.padding-y-5 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.padding-y-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.padding-y-15 {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+img.albin {
+    width: 3rem;
+    height: 3rem;
+}
+
+.center-flex-items {
+    align-items: center !important;
+}
+
+.width-fit {
+    width: fit-content;
+}
+
+.height-fit {
+    height: fit-content;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.min-height-0 {
+    min-height: 0;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-shrink-0 {
+    flex-shrink: 0;
+}
+
+.flex-1 {
+    flex: 1 1 0%;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.items-start {
+    align-items: flex-start;
+}
+
+.relative {
+    position: relative;
+}
+
+.static {
+    position: static;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-x-hidden {
+    overflow-x: hidden;
+}
+
+.overflow-y-hidden {
+    overflow-y: hidden;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-around {
+    justify-content: space-around;
+}
+
+.justify-center {
+    justify-content: center;
+}
