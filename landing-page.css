@@ -10,7 +10,8 @@ body {
 
 * {
     color: #fff;
-    scrollbar-color: #535353;
+    /*scrollbar-color: #535353;*/
+    scrollbar-color: #343434 #202020;
 }
 
 .button {
@@ -56,42 +57,44 @@ body {
 }
 
 .padding-x-5 {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .padding-x-10 {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .padding-x-15 {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
 .padding-y-5 {
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
 .padding-y-10 {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .padding-y-15 {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
 img.albin {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
 .center-flex-items {
-    align-items: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .width-fit {

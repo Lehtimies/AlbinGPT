@@ -14,11 +14,12 @@
 
 <div class="relative full-height full-width flex overflow-hidden z-0">
     <!-- Sidebar -->
-    <div class="flex-shrink-0 overflow-x-hidden sidebar-color" style="z-index: 5; width: 270px;">
+    <div class="flex-shrink-0 overflow-hidden sidebar-color w3-hide-small" style="z-index: 5; width: 270px;">
         <div class="full-height" style="width: 270px;">
             <div class="flex full-height flex-column min-height-0">
                 <div class="relative flex-1 full-height full-width items-start">
                     <nav class="padding-x-10 flex flex-column full-height full-width nav-border">
+                        <!--Top Item-bar-->
                         <div class="center-flex-items flex justify-between padding-y-10">
                             <span class="flex">
                                 <a href="#NewChat" class="padding-x-10 button-round">New Chat</a>
@@ -27,14 +28,37 @@
                                 <a href="#OtherShit" class="padding-x-10 button-round">Other Shit</a>
                             </span>
                         </div>
+                        <!--Chat History-->
+                        <div class="flex flex-column padding-x-10 full-height overflow-y-auto">
+                            <span class="flex">
+                                <p style="font-size: 15px; margin-bottom: 0%"><b>Chat History</b></p>
+                            </span>
+
+                            <div class="flex full-height">
+                                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                </p>
+                            </div>
+                        </div>
+                        <!--Bottom Bar-->
+                        <div class="flex full-width height-fit padding-y-5">
+                            <span class="flex">
+                                <a href="#Settings" class="padding-x-10 button-round">Settings</a>
+                            </span>
+                        </div>
                     </nav>
                 </div>
             </div>
         </div>
     </div>
 
+    <!--Main content-->
     <div class="relative flex full-height full-width flex-1 flex-column overflow-hidden">
-        <div class="relative flex flex-1 full-height full-width">
+        <div class="relative flex flex-1 full-height full-width flex-column">
+            <!--Name plus albin bar-->
             <div class="relative flex full-width height-fit padding-x-10 padding-y-10 center-flex-items justify-between">
                 <span class="flex">
                     <a href="#" class="padding-x-10 button-round">AlbinGPT</a>
@@ -43,6 +67,25 @@
                 <span class="flex">
                     <img src="Images/Albin.png" class="albin w3-right" alt="Albin">
                 </span>
+            </div>
+
+            <!--Chat Area-->
+            <div class="relative flex flex-1 full-width full-height padding-x-10 padding-y-10 center-flex-items 
+            flex-column justify-center overflow-hidden">
+                <div class="padding-x-15" style="max-width: 50rem;">
+                    <div class="relative flex center-flex-items">
+                        <p class="w3-center" style="font-size: xx-large; margin: 0%;"> Watchu want?</p>
+                    </div>
+    
+                    <div class="relative flex center-flex-items">
+                        <p class="w3-center"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+                            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
