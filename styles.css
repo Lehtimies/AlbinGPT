@@ -9,7 +9,7 @@ body {
 }
 
 * {
-    color: #fff;
+    color: #dfdede;
     /*scrollbar-color: #535353;*/
     scrollbar-color: #343434 #202020;
 }
@@ -52,13 +52,32 @@ body {
     z-index: 0;
 }
 
-.sidebar-color {
+.sidebar {
     background-color: #1a1a1a;
+    z-index: 5;
+    width: 270px; 
+    transition: all 1s ease;
+}
+
+.sidebar-hidden {
+    width: 0%;
+}
+
+.hidden {
+    display: none;
 }
 
 .padding-x-5 {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+}
+
+.text-color-1 {
+    color: #b0afaf;
+}
+
+.text-color-2 {
+    color: #eae9e9;
 }
 
 .padding-x-10 {
