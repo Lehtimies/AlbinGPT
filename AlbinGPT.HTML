@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600" rel="stylesheet">
     <style>
     </style>
-<script src="albinGPT.js"></script>
+    <script src="albinGPT.js"></script>
 </head>
 <body>
 
@@ -85,7 +85,7 @@
                 <div class="padding-x-15" style="max-width: 50rem;">
                     <!--Prompt text-->
                     <div class="relative flex center-flex-items">
-                        <p class="w3-center" style="font-size: xx-large; margin: 0%;"> Watchu want?</p>
+                        <p id="promptText" class="w3-center" style="font-size: xx-large; margin: 0%;"></p>
                     </div>
     
                     <!--Input bar-->
@@ -107,6 +107,10 @@
         </div>
     </div>
 </div>
+
+<script>
+    typeOutText('promptText', "Watchu want stoopid?", 80)
+</script>
 
 </body>
 </html> 
