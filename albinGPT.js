@@ -14,3 +14,39 @@ function typeOutText(elementID, text, speed) {
         }, speed * i);
     }
 }
+
+async function sendMessage(userMessage) {
+    console.log('User message: ', userMessage);
+
+    const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userMessage })
+    });
+
+    const data = await response.json();
+    console.log(data);
+    const dataToReturn = data.content;
+    console.log(dataToReturn);
+    return dataToReturn;
+} 
+
+async function handleMessage() {
+    const userMessage = document.getElementById('userMessage').value;
+
+    try {
+        const assistantResponse = await sendMessage(userMessage);
+        typeOutText('gptOutput', assistantResponse + '\n \n', 5);
+    } catch (error) {
+        console.error('Error while sending out message: ', error);
+    }
+}
+
+async function endSession() {
+    const response = await fetch('http://localhost:5000/api/end', {
+        method: 'POST'
+    });
+
+    const data = await response.json();
+    console.log(data);
+}

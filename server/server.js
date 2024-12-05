@@ -1,5 +1,6 @@
 const express = require('express');
 const OpenAI = require('openai');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
@@ -9,9 +10,10 @@ const initializeMessages = [
     { role: "system", content: "You are Albin, master of the universe and a helpful assistant." },
 ];
 
+app.use(cors());
 app.use(express.json());
 
-// Configur OpenAI
+// Configure OpenAI
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -21,7 +23,7 @@ let messages = [
 ];
 
 // Endpoint to send messages to OpenAI
-app.post('api/chat', async (req, res) => {
+app.post('/api/chat', async (req, res) => {
     const { userMessage } = req.body;
 
     if (!userMessage || typeof userMessage !== 'string') {
@@ -39,7 +41,7 @@ app.post('api/chat', async (req, res) => {
     try {
         // Send messages to OpenAI
         const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4o-mini", // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
             messages: messages
         });
 
@@ -60,11 +62,16 @@ app.post('api/chat', async (req, res) => {
 });
 
 // Endpoint to end session
-app.post('/api/end', (res) => {
+app.post('/api/end', (req, res) => {
     messages = [
         initializeMessages[0]
     ];
     res.json({ message: 'Session ended' });
+});
+
+// Message to user upon opening server
+app.get('/', (req, res) => {
+    res.send('Server running');
 });
 
 // Start the server
