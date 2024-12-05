@@ -6,7 +6,7 @@ function toggleSidebar() {
     openButton.classList.toggle('hidden');
 }
 
-function typeOutText(elementID, text, speed) {
+async function typeOutText(elementID, text, speed) {
     const element = document.getElementById(elementID);
     for (let i = 0; i < text.length; i++) {
         setTimeout(() => {
@@ -17,6 +17,7 @@ function typeOutText(elementID, text, speed) {
 
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
+    await typeOutText('gptOutput', 'User: ' + userMessage + '\n \n', 5);
 
     const response = await fetch('http://localhost:5000/api/chat', {
         method: 'POST',
@@ -36,7 +37,7 @@ async function handleMessage() {
 
     try {
         const assistantResponse = await sendMessage(userMessage);
-        typeOutText('gptOutput', assistantResponse + '\n \n', 5);
+        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
