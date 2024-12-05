@@ -25,26 +25,33 @@
                         <!--Top Item-bar-->
                         <div class="center-flex-items flex justify-between padding-y-10">
                             <span class="flex">
-                                <button class="button-round padding-x-10 text-color-2" type="button" onclick="toggleSidebar()">Close Bar</button>
+                                <button class="button-round padding-x-5 text-color-2" type="button" onclick="toggleSidebar()">Close Bar</button>
                             </span>
 
                             <span class="flex">
-                                <a href="AlbinGPT-chat.HTML" class="padding-x-10 button-round text-color-2">New Chat</a>
+                                <a href="AlbinGPT-chat.HTML" class="padding-x-5 button-round text-color-2">New Chat</a>
                             </span>
                         </div>
                         <!--Chat History-->
-                        <div class="flex flex-column padding-x-10 full-height overflow-y-auto">
-                            <span class="flex">
+                        <div class="flex flex-column full-height overflow-y-auto">
+                            <span class="flex padding-x-5">
                                 <p style="font-size: 15px; margin-bottom: 0%; margin-top: 0.75rem;"><b>Chat History</b></p>
                             </span>
 
                             <div class="flex full-height">
-                                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                </p>
+                                <ul class="chat-history-list">
+                                    <li class="chat-history-list-item">
+                                        <a class="padding-x-5 button-chat-history" href="#chat1">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
+                                    </li>
+
+                                    <li class="chat-history-list-item">
+                                        <a class="padding-x-5 button-chat-history" href="#chat2">Lorem ipsum dolor sit amet</a>
+                                    </li>
+
+                                    <li class="chat-history-list-item">
+                                        <a class="padding-x-5 button-chat-history" href="#chat3">Lorem ipsum dolor sit amet</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <!--Bottom Bar-->

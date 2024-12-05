@@ -14,18 +14,6 @@ body {
     scrollbar-color: #343434 #202020;
 }
 
-.button {
-    background-color: inherit;
-    transition-duration: 50ms;
-    border: none;
-    color: inherit;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: inherit;
-}
-
 .button-round {
     background-color: inherit;
     transition-duration: 50ms;
@@ -39,7 +27,7 @@ body {
     border-radius: 12px;
 }
 
-.button:hover, .button-round:hover {
+.button-chat-history:hover, .button-round:hover {
     background-color: #363636;
     color: inherit;
 }
@@ -77,6 +65,45 @@ body {
 
 .wrap-text {
     white-space: pre-wrap;
+}
+
+.chat-history-list {
+    margin-top: 0.75rem;
+    padding: 0;
+    list-style-type: none;
+    overflow: hidden;
+}
+
+.chat-history-list-item {
+    margin-bottom: 0.25rem;
+}
+
+.button-chat-history {
+    position: relative;
+    background-color: inherit;
+    transition-duration: 50ms;
+    font-size: 15px !important;
+    width: 100%;
+    border: none;
+    color: inherit;
+    padding: 4px 8px;
+    text-align: left;
+    text-decoration: none;
+    display: inline-block;
+    font-size: inherit;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.button-chat-history::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px; /* Adjust width of fade */
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #1a1a1a);
+    pointer-events: none;
 }
 
 .padding-x-5 {
