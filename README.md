@@ -1,2 +1,2 @@
 # AlbinGPT
-ChatGPT Frontend for the OpenAI GPT4o API
+ChatGPT Frontend for the OpenAI GPT4 API
