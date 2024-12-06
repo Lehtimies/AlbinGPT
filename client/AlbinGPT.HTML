@@ -29,7 +29,7 @@
                             </span>
 
                             <span class="flex">
-                                <a href="AlbinGPT-chat.HTML" class="padding-x-5 button-round text-color-2">New Chat</a>
+                                <button class="padding-x-5 button-round text-color-2" type="button" onclick="endSession()">New Chat</button>
                             </span>
                         </div>
                         <!--Chat History-->
@@ -101,8 +101,14 @@
                         <p id="promptText-2">Press 'New Chat' if you want to begin a new chat.</p>
                     </div>
 
-                    <div class="relative flex center-flex-items">
-                        <a href="AlbinGPT-chat.HTML" class="padding-x-10 button-round text-color-2">New Chat</a>
+                    <div class="relative flex center-flex-items flex-row justify-center">
+                        <span class="flex">
+                            <button class="padding-x-5 button-round text-color-2" type="button" onclick="endSession()">New Chat</button>
+                        </span>
+
+                        <span class="flex">
+                            <a href="AlbinGPT-chat.HTML" class="padding-x-10 button-round text-color-2">Ongoing Chat</a>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -116,7 +122,7 @@
 </div>
 
 <script>
-    typeOutText('promptText', "Watchu want stoopid?", 60)
+    typeOutText('promptText', "Watchu want stoopid?", 60, 1)
     //typeOutText('promptText-2', "Press 'New Chat' if you want to begin a new chat.", 30)
 </script>
 

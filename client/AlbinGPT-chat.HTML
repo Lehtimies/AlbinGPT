@@ -29,7 +29,7 @@
                             </span>
 
                             <span class="flex">
-                                <a href="AlbinGPT-chat.HTML" class="padding-x-5 button-round text-color-2">New Chat</a>
+                                <button class="padding-x-5 button-round text-color-2" type="button" onclick="endSession()">New Chat</button>
                             </span>
                         </div>
                         <!--Chat History-->
@@ -115,9 +115,9 @@
 </div>
 
 <script>
-    // Initialize the GPT session
-    endSession();
-
+    // Check whether there is an active session and load it
+    checkSession();
+    
     /*// Temporary solution to manually load the GPT response
     document.getElementById('inputFile').addEventListener('change', function() {
         let fr = new FileReader();

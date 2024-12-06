@@ -18,6 +18,8 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+let messageHistory = [];    // Store messages for the session
+
 let messages = [
     initializeMessages[0]
 ];
@@ -32,6 +34,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Append user message to messages
     messages.push({ role: "user", content: userMessage });
+    messageHistory.push({ role: "user", content: userMessage });
 
     // Limit messages to 10
     if (messages.length > 10) {
@@ -55,8 +58,10 @@ app.post('/api/chat', async (req, res) => {
         // Get OpenAI response and append to messages
         const assistantResponse = response.choices[0].message.content;
         messages.push({ role: "assistant", content: assistantResponse });
+        messageHistory.push({ role: "assistant", content: assistantResponse });
 
         // Send response to client
+        console.log('Message History: ', messageHistory)
         res.status(200).json({ 
             content : assistantResponse 
         });
@@ -68,11 +73,24 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// Endpoint to retrieve messages
+app.post('/api/messages', (req, res) => {
+    try {
+        res.status(200).json({ messages: messageHistory });
+        console.log('Messages sent to client');
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Endpoint to end session
 app.post('/api/end', (req, res) => {
+    // Reset messages
+    messageHistory = [];
     messages = [
         initializeMessages[0]
     ];
+    console.log('Session ended');
     res.status(200).json({ message: 'Session ended' });
 });
 

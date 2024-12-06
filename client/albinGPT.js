@@ -6,18 +6,27 @@ function toggleSidebar() {
     openButton.classList.toggle('hidden');
 }
 
-async function typeOutText(elementID, text, speed) {
-    const element = document.getElementById(elementID);
-    for (let i = 0; i < text.length; i++) {
-        setTimeout(() => {
-            element.innerHTML += text[i];
-        }, speed * i);
-    }
+function typeOutText(elementID, text, speed, chunkSize) {
+    return new Promise((resolve) => {
+        const element = document.getElementById(elementID);
+        let i = 0;
+
+        const typeCharacter = () => {
+            if (i < text.length) {
+                element.innerHTML += text.substring(i, i + chunkSize);
+                i += chunkSize;
+                setTimeout(typeCharacter, speed);
+            } else {
+                resolve();
+            }
+        }
+        typeCharacter();
+    });
 }
 
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
-    await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5);
+    await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
 
     try {
         const response = await fetch('http://localhost:5000/api/chat', {
@@ -57,17 +66,70 @@ async function handleMessage() {
 
     try {
         const assistantResponse = await sendMessage(userMessage);
-        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5);
+        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5, 1);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
 }
 
 async function endSession() {
-    const response = await fetch('http://localhost:5000/api/end', {
-        method: 'POST'
-    });
+    try {
+        // Open a new chat
+        window.location.href = 'AlbinGPT-chat.html';
+        console.log('New chat opened');
 
-    const data = await response.json();
-    console.log(data);
+        // End the session
+        const response = await fetch('http://localhost:5000/api/end', {
+            method: 'POST'
+        });
+    
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error('Error while ending session: ', error);
+    }
+}
+
+// Function to check whether a session is ongoing
+async function checkSession() {
+    try {
+        const response = await fetch('http://localhost:5000/api/messages', {
+            method: 'POST'
+        });
+    
+        const data = await response.json();
+        console.log(data);
+        const messages = data.messages;
+        
+        if (messages.length === 0) {
+            console.log('No ongoing session');
+            return;
+        }
+        
+        console.log('Messages array: ', messages);
+        
+        let blockSize = 10;
+        if (messages.length > 5) {
+            blockSize = 20;
+        }
+        if (messages.length > 15) {
+            blockSize = 30;
+        }
+
+        // Prints out the messages to the output
+        for (const message of messages) {
+            switch (message.role) {
+                case 'user':
+                    await typeOutText('gptOutput', 'User: \n' + message.content + '\n \n', 0.1, blockSize);
+                    break;
+                case 'assistant':
+                    await typeOutText('gptOutput', 'Albin: \n' + message.content + '\n \n', 0.1, blockSize);
+                    break;
+                default:
+                    console.error('Invalid role: ', message.role);
+            }
+        }
+    } catch (error) {
+        console.error('Error while checking session: ', error);
+    }
 }
