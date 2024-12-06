@@ -50,7 +50,7 @@ app.post('/api/chat', async (req, res) => {
         messages.push({ role: "assistant", content: assistantResponse });
 
         // Send response to client
-        res.json({ 
+        res.status(200).json({ 
             content : assistantResponse 
         });
     } catch (error) {
@@ -66,7 +66,7 @@ app.post('/api/end', (req, res) => {
     messages = [
         initializeMessages[0]
     ];
-    res.json({ message: 'Session ended' });
+    res.status(200).json({ message: 'Session ended' });
 });
 
 // Message to user upon opening server

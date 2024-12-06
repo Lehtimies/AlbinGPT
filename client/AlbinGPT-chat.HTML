@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AlbinGPT</title>
-    <link rel="icon" href="Images/Albin.png">
+    <link rel="icon" href="../Images/Albin.png">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -52,46 +52,6 @@
                                     <li class="chat-history-list-item">
                                         <a class="padding-x-5 button-chat-history" href="#chat3">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
                                     </li>
-                                    
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat4">Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat5">Lorem ipsum dolor sit amet</a>
-                                    </li>
-                                    
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat6">Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat7">Lorem ipsum dolor sit amet Lorem ipsum dolor</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat8">Lorem ipsum dolor sit amet</a>
-                                    </li>
-                                    
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat9">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat10">Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat11">Lorem ipsum dolor sit amet</a>
-                                    </li>
-                                    
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat12">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat13">Lorem ipsum dolor sit amet</a>
-                                    </li>
                                 </ol>
                             </div>
                         </div>
@@ -123,14 +83,14 @@
                 </div>
 
                 <span class="flex">
-                    <img src="Images/Albin.png" class="albin w3-right" alt="Albin">
+                    <img src="../Images/Albin.png" class="albin w3-right" alt="Albin">
                 </span>
             </div>
 
             <!--Chat Area-->
             <div class="relative flex flex-2 full-width full-height padding-x-10 padding-y-10 center-flex-items 
             flex-column justify-between overflow-auto">
-                <div class="padding-x-15 full-width" style="max-width: 62rem;">
+                <div class="padding-x-15 full-width" style="max-width: 50rem;">
                     <!--Output Display-->
                     <div class="relative flex wrap-text">
                         <p id="gptOutput" style="margin: 0%;"></p>
@@ -139,10 +99,13 @@
             </div>
 
             <!--Input bar-->
-            <div class="static flex-1 center-flex-items" style="max-height: 100px;">
+            <div class="static flex-1 center-flex-items" style="max-height: 105px;">
                 <div style="max-width: 50rem;">
-                    <p class="w3-center" style="margin-top: 0%;">Temporary solution to manually load the GPT response</p>
-                    <input id="inputFile" type="file" name="inputFile" class="button-round text-color-2">
+                    <div class="relative flex full-width center-flex-items">
+                        <!--<input type="text" id="userMessage" onkeypress="" class="input-field" placeholder="Tell me what's up!">-->
+                        <textarea id="userMessage" class="input-field padding-x-10" placeholder="Tell me what's up!" style="width: 50rem; margin-bottom: 5px;"></textarea>
+                        <button type="button" onclick="handleMessage()" class="button-round" style="margin-left: -5rem;">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -150,14 +113,17 @@
 </div>
 
 <script>
-    // Temporary solution to manually load the GPT response
+    // Initialize the GPT session
+    endSession();
+
+    /*// Temporary solution to manually load the GPT response
     document.getElementById('inputFile').addEventListener('change', function() {
         let fr = new FileReader();
         fr.onload = function() {
             typeOutText('gptOutput', fr.result + '\n \n', 5);
         }
         fr.readAsText(this.files[0]);
-    })
+    })*/
 </script>
 
 </body>

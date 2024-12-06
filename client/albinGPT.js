@@ -17,23 +17,43 @@ async function typeOutText(elementID, text, speed) {
 
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
-    await typeOutText('gptOutput', 'User: ' + userMessage + '\n \n', 5);
+    await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5);
 
-    const response = await fetch('http://localhost:5000/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userMessage })
-    });
+    try {
+        const response = await fetch('http://localhost:5000/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userMessage })
+        });
 
-    const data = await response.json();
-    console.log(data);
-    const dataToReturn = data.content;
-    console.log(dataToReturn);
-    return dataToReturn;
+        if (!response.ok) {
+            if (response.status === 400) {
+                console.error('Bad Request', response.status);
+                return ('Invalid user message format. String expected');
+            }
+    
+            if (response.status === 500) {
+                console.error('Internal Server Error', response.status);
+                return ('Internal server error, please try again');
+            }
+    
+            // Default error message
+            console.error('Error', response.status);
+            return (`An error occurred, ${response.statusText}`);
+        }
+    
+        const data = await response.json();
+        console.log(data);
+        return data.content;
+    } catch (error) {
+        console.error('Error while sending message: ', error);
+        return ('An error occurred, please try again');
+    }
 } 
 
 async function handleMessage() {
     const userMessage = document.getElementById('userMessage').value;
+    document.getElementById('userMessage').value = '';
 
     try {
         const assistantResponse = await sendMessage(userMessage);
