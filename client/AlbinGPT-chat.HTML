@@ -89,22 +89,24 @@
 
             <!--Chat Area-->
             <div class="relative flex flex-2 full-width full-height padding-x-10 padding-y-10 center-flex-items 
-            flex-column justify-between overflow-auto">
-                <div class="padding-x-15 full-width" style="max-width: 50rem;">
+            flex-column justify-between overflow-y-auto">
+                <div class="flex padding-x-15 full-width" style="max-width: 50rem;">
                     <!--Output Display-->
-                    <div class="relative flex wrap-text">
-                        <p id="gptOutput" style="margin: 0%;"></p>
+                    <div class="relative full-width flex wrap-text">
+                        <div id="gptOutput" class="full-width"></div>
                     </div>
                 </div>
             </div>
 
             <!--Input bar-->
             <div class="static flex-1 center-flex-items" style="max-height: 105px;">
-                <div style="max-width: 50rem;">
+                <div class="full-width" style="max-width: 50rem;">
                     <div class="relative flex full-width center-flex-items">
                         <!--<input type="text" id="userMessage" onkeypress="" class="input-field" placeholder="Tell me what's up!">-->
-                        <textarea id="userMessage" class="input-field padding-x-10" placeholder="Tell me what's up!" style="width: 50rem; margin-bottom: 5px;"></textarea>
-                        <button type="button" onclick="handleMessage()" class="button-round" style="margin-left: -5rem;">Send</button>
+                        <div class="flex flex-row input-container">
+                            <textarea id="userMessage" class="flex input-field padding-x-10" placeholder="Tell me what's up!"></textarea>
+                            <button type="button" onclick="handleMessage()" class="flex-1 button-round" style="margin: 1rem">Send</button>
+                        </div>
                     </div>
                 </div>
             </div>

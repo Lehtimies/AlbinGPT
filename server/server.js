@@ -35,8 +35,11 @@ app.post('/api/chat', async (req, res) => {
 
     // Limit messages to 10
     if (messages.length > 10) {
-        messages = messages.slice(-10);
+        messages.splice(1, 2);
     };
+
+    console.log('Messages array: ', messages);
+    console.log('Messages array length: ', messages.length);
 
     try {
         // Send messages to OpenAI
@@ -44,6 +47,10 @@ app.post('/api/chat', async (req, res) => {
             model: "gpt-4o-mini", // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
             messages: messages
         });
+
+        // Log the token count
+        const tokens = response.usage.total_tokens;
+        console.log('Token count: ', tokens);
 
         // Get OpenAI response and append to messages
         const assistantResponse = response.choices[0].message.content;
