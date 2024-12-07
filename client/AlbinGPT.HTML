@@ -32,6 +32,7 @@
                                 <button class="padding-x-5 button-round text-color-2" type="button" onclick="endSession()">New Chat</button>
                             </span>
                         </div>
+                        
                         <!--Chat History-->
                         <div class="flex flex-column full-height overflow-y-auto">
                             <span class="flex padding-x-5">
@@ -55,10 +56,15 @@
                                 </ol>
                             </div>
                         </div>
+
                         <!--Bottom Bar-->
-                        <div class="flex full-width height-fit padding-y-5">
+                        <div class="flex flex-row full-width height-fit padding-y-5 justify-between">
+                            <!--Temp solution to loading previous chats-->
                             <span class="flex">
-                                <a href="#Settings" class="padding-x-10 button-round text-color-2">Settings</a>
+                                <textarea id="chatIdInput" class="flex input-field padding-x-10" placeholder="Enter id" style="margin: 1rem; max-height: 2.8rem; border: 3px solid #373737"></textarea>
+                            </span>
+                            <span class="flex flex-1">
+                                <button type="button" onclick="loadChat()" class="flex-1 button-round" style="margin: 1rem">Load</button>
                             </span>
                         </div>
                     </nav>
@@ -124,6 +130,18 @@
 <script>
     typeOutText('promptText', "Watchu want stoopid?", 60, 1)
     //typeOutText('promptText-2', "Press 'New Chat' if you want to begin a new chat.", 30)
+    
+    // Temporary function to load an id from the input field in the sidebar
+    const loadChat = () => {
+        try {
+            let chatId = document.getElementById('chatIdInput').value;
+            chatId = parseInt(chatId);
+            console.log(chatId);
+            loadConversation(chatId);
+        } catch (error) {
+            console.error("Error with input:", error);
+        }
+    };
 </script>
 
 </body>
