@@ -1,8 +1,3 @@
-
-// KNOWN BUGS:
-/* 1. Line 119: The splice in the if statement seems to mess up the messageHistory.
-   2. Line 247: The currentId increasing even if no messages were added to db */
-
 const express = require('express');
 const OpenAI = require('openai');
 const cors = require('cors');
@@ -13,7 +8,7 @@ const app = express();
 const port = 5000;
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
-const model = "gpt-4o-mini"; // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
+const model = "gpt-4o"; // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
 let db;
 let currentId;
 
@@ -76,7 +71,7 @@ async function getNextId() {
             { $inc: { currentId: 1 } },
             { returnDocument: "after", upsert: true }
         );
-        console.log("Result from NextId: ", result);
+        console.log("Next conversation ID retrieved: ", result.currentId);
         return result.currentId;
     } catch (error) {
         console.error("Error updating Id: ", error);
@@ -115,20 +110,13 @@ app.post('/api/load-conversations', async (req, res) => {
         const result = await conversations.findOne({ _id: currentId }, { _id: 0, messages: 1 });
         messageHistory = result ? result.messages : []; // If no result, set messageHistory to empty array
         console.log("Message History from db: ", messageHistory)
-
-        
-        // BUG:
-        /*Something about the splice in the code below seems to mess up the messageHistory.
-        When the messageHistory then gets added to the database in the next message
-        from the client, it erases history from the database. It's not a major issue but 
-        it is kinda annoying and will have to fixed later*/
         
         // Put the last 10 searches into memory (the ones that get sent to OpenAI)
         if (messageHistory.length > 10) {
-            const amountToSplice = messageHistory.length - 10;
-            messages = [initializeMessages[0], ...messageHistory.splice(amountToSplice, 10)];
+            const messageToSlice = messageHistory.length - 10;
+            messages = [initializeMessages[0], ...messageHistory.slice(messageToSlice)];
         } else {
-            [initializeMessages[0], ...messageHistory];
+            messages = [initializeMessages[0], ...messageHistory];
         }
         console.log("Messages loaded from db: ", messages);
 
@@ -198,7 +186,7 @@ app.post('/api/chat', async (req, res) => {
                 model: "gpt-4o-mini", // Specifies the gpt model for the summary (Hardcoded cuz it's cheaper (; )
                 messages: [{
                     role: "user", 
-                    content: "Summarize the following sentence into 3-5 words: " + userMessage + ". Give me only the answer in words and not anything else like ? or ! or flavor text."
+                    content: "Summarize the following sentence into 1-5 words: " + userMessage + ".Remember, only a summary of the sentence. NOT AN ANSWER! Give the summary only in words and not anything else like '?', '.', '!' or flavor text."
                 }]
             });
             const summary = summaryResponse.choices[0].message.content;
@@ -240,18 +228,17 @@ app.get('/api/messages', (req, res) => {
 // Endpoint to end session
 app.post('/api/end-session', async(req, res) => {
     // Reset messages
-    messageHistory = [];
-    messages = [
-        initializeMessages[0]
-    ];
+    if (messageHistory.length !== 0) {
+        messageHistory = [];
+        messages = [
+            initializeMessages[0]
+        ];
 
-    // BUG:
-    /* If the user starts spamming new-chat the end-session uri the currentId starts incrementing
-       even though nothing has been written in the indexes it's incrementing over.
-       It's nothing major and doesn't break anything but it is a bit wasteful */
-
-    currentId = await getNextId(); // Increment the currentId for the next conversation
-    console.log('Current conversation ID: ', currentId);
+        if (messageHistory.length > 0) {
+            currentId = await getNextId(); // Increment the currentId for the next conversation
+        }
+    }
+    console.log('Next session conversation ID: ', currentId);
     console.log('Session ended');
     res.status(200).json({ message: 'Session ended' });
 });
@@ -281,6 +268,8 @@ async function startServer() {
 // Handle shutdown gracefully (CTRL + C)
 process.on('SIGINT', async () => {
     console.log('Gracefully shutting down server');
+    currentId = await getNextId();
+    console.log('Conversation ID updated before closing');
     await client.close();
     console.log('MongoDB connection closed');
     process.exit(0);
