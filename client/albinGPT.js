@@ -24,6 +24,18 @@ function typeOutText(elementID, text, speed, chunkSize) {
     });
 }
 
+async function handleMessage() {
+    const userMessage = document.getElementById('userMessage').value;
+    document.getElementById('userMessage').value = '';
+
+    try {
+        const assistantResponse = await sendMessage(userMessage);
+        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5, 1);
+    } catch (error) {
+        console.error('Error while sending out message: ', error);
+    }
+}
+
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
     await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
@@ -60,17 +72,6 @@ async function sendMessage(userMessage) {
     }
 } 
 
-async function handleMessage() {
-    const userMessage = document.getElementById('userMessage').value;
-    document.getElementById('userMessage').value = '';
-
-    try {
-        const assistantResponse = await sendMessage(userMessage);
-        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5, 1);
-    } catch (error) {
-        console.error('Error while sending out message: ', error);
-    }
-}
 
 async function endSession() {
     try {
@@ -79,7 +80,7 @@ async function endSession() {
         console.log('New chat opened');
 
         // End the session
-        const response = await fetch('http://localhost:5000/api/end', {
+        const response = await fetch('http://localhost:5000/api/end-session', {
             method: 'POST'
         });
     
@@ -94,7 +95,7 @@ async function endSession() {
 async function checkSession() {
     try {
         const response = await fetch('http://localhost:5000/api/messages', {
-            method: 'POST'
+            method: 'GET'
         });
     
         const data = await response.json();
