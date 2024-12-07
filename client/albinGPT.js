@@ -4,7 +4,7 @@ function toggleSidebar() {
 
     sidebar.classList.toggle('sidebar-hidden');
     openButton.classList.toggle('hidden');
-}
+};
 
 function typeOutText(elementID, text, speed, chunkSize) {
     return new Promise((resolve) => {
@@ -22,7 +22,7 @@ function typeOutText(elementID, text, speed, chunkSize) {
         }
         typeCharacter();
     });
-}
+};
 
 async function handleMessage() {
     const userMessage = document.getElementById('userMessage').value;
@@ -34,7 +34,7 @@ async function handleMessage() {
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
-}
+};
 
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
@@ -70,7 +70,7 @@ async function sendMessage(userMessage) {
         console.error('Error while sending message: ', error);
         return ('An error occurred, please try again');
     }
-} 
+};
 
 
 async function endSession() {
@@ -89,7 +89,7 @@ async function endSession() {
     } catch (error) {
         console.error('Error while ending session: ', error);
     }
-}
+};
 
 // Function to check whether a session is ongoing
 async function checkSession() {
@@ -133,4 +133,36 @@ async function checkSession() {
     } catch (error) {
         console.error('Error while checking session: ', error);
     }
-}
+};
+
+// Function to load an old conversation from the database based on the session ID
+async function loadConversation(db_id) {
+    try {
+        console.log('Loading conversation with ID: ', db_id);
+        console.log('ID type: ', typeof db_id);
+        const response = await fetch('http://localhost:5000/api/load-conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ db_id })
+        });
+        console.log('Response: ', response);
+        let data;
+        try {
+            data = await response.json();
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+        
+        // Check if the response is OK
+        if (!response.ok) {
+            console.error('Error:', response.status, data.error);
+            return;
+        }
+        console.log(data.message);
+        
+        // End the current session
+        window.location.href = 'AlbinGPT-chat.html';
+    } catch (error) {
+        console.error('Error while loading conversation: ', error);
+    }
+};

@@ -11,6 +11,7 @@ const client = new MongoClient(uri);
 const model = "gpt-4o"; // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
 let db;
 let currentId;
+let messagesLoaded = false;
 
 // Check if the required environment variables are set
 const checkEnvVar = (envVar) => {
@@ -95,11 +96,17 @@ async function getCurrentId() {
 // Endpoint to load conversations from db
 app.post('/api/load-conversations', async (req, res) => {
     const { db_id } = req.body;
-
+    
     // Check if the conversation ID is valid
     if (!db_id || typeof db_id !== 'number') {
         return res.status(400).json({ error: 'Invalid conversation ID format. Number expected' });
     }
+    
+    // Check if the conversation ID exists in the database
+    const conversationExists = await db.collection("conversations").findOne({ _id: db_id });
+    if (!conversationExists) {
+        return res.status(404).json({ error: 'Conversation ID not found' });
+    };
 
     currentId = db_id; // Update the currentId to the one sent from the client
 
@@ -118,6 +125,7 @@ app.post('/api/load-conversations', async (req, res) => {
         } else {
             messages = [initializeMessages[0], ...messageHistory];
         }
+        messagesLoaded = true;
         console.log("Messages loaded from db: ", messages);
 
         // Send response to client
@@ -128,13 +136,14 @@ app.post('/api/load-conversations', async (req, res) => {
     }
 });
 
-app.get('/api/conversations/summaries', async (req, res) => {
+app.get('/api/conversations/get-id-and-summaries', async (req, res) => {
     try {
-        const conversationsList = db.collection("conversations").find({}, { _id: 1, _summary: 1 }).toArray();
+        const conversationsList = await db.collection("conversations").find({}, { _id: 1, _summary: 1 }).toArray();
         res.status(200).json({ conversations: conversationsList });
+        console.log("Conversation data sent to client: ", conversationsList);
     } catch (error) {
-        console.error("Error retrieving conversation summaries: ", error);
-        res.status(500).json({ error: 'Failed to retrieve conversation summaries' });
+        console.error("Error retrieving conversation data: ", error);
+        res.status(500).json({ error: 'Failed to retrieve conversation data' });
     }
 });
 
@@ -227,12 +236,17 @@ app.get('/api/messages', (req, res) => {
 
 // Endpoint to end session
 app.post('/api/end-session', async(req, res) => {
-    // Reset messages
     if (messageHistory.length !== 0) {
+        // Reset messages
         messageHistory = [];
         messages = [
             initializeMessages[0]
         ];
+
+        if (messagesLoaded) {
+            currentId = await getCurrentId();
+            messagesLoaded = false;
+        }
 
         if (messageHistory.length > 0) {
             currentId = await getNextId(); // Increment the currentId for the next conversation
