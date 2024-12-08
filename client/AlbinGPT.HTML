@@ -115,18 +115,6 @@
 <script>
     typeOutText('promptText', "Watchu want stoopid?", 60, 1)
     populateChatHistory();
-    
-    // Temporary function to load an id from the input field in the sidebar
-    const loadChat = () => {
-        try {
-            let chatId = document.getElementById('chatIdInput').value;
-            chatId = parseInt(chatId);
-            console.log(chatId);
-            loadConversation(chatId);
-        } catch (error) {
-            console.error("Error with input:", error);
-        }
-    };
 </script>
 
 </body>

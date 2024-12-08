@@ -93,7 +93,6 @@
             <div class="static flex-1 center-flex-items" style="max-height: 105px;">
                 <div class="full-width" style="max-width: 50rem;">
                     <div class="relative flex full-width center-flex-items">
-                        <!--<input type="text" id="userMessage" onkeypress="" class="input-field" placeholder="Tell me what's up!">-->
                         <div class="flex flex-row input-container">
                             <textarea id="userMessage" class="flex input-field padding-x-10" placeholder="Tell me what's up!"></textarea>
                             <button type="button" onclick="handleMessage()" class="flex-1 button-round" style="margin: 1rem">Send</button>
@@ -109,18 +108,6 @@
     // Check whether there is an active session and load it
     checkSession();
     populateChatHistory();
-    
-    // Temporary function to load an id from the input field in the sidebar
-    const loadChat = () => {
-        try {
-            let chatId = document.getElementById('chatIdInput').value;
-            chatId = parseInt(chatId);
-            console.log(chatId);
-            loadConversation(chatId);
-        } catch (error) {
-            console.error("Error with input:", error);
-        }
-    };
 </script>
 
 </body>
