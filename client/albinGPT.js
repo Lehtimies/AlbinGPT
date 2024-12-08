@@ -62,10 +62,23 @@ async function sendMessage(userMessage) {
             console.error('Error', response.status);
             return (`An error occurred, ${response.statusText}`);
         }
-    
-        const data = await response.json();
-        console.log(data);
-        return data.content;
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            
+            if (response.status === 200) {
+                return data.content;
+            }
+
+            if (response.status === 201) {
+                const summary = data.summary;
+                const db_id = data.db_id;
+                console.log('New conversation started, Summary and ID: ', summary, db_id);
+                createChatHistoryElement(db_id, summary);
+                return data.content;
+            }
+        }
     } catch (error) {
         console.error('Error while sending message: ', error);
         return ('An error occurred, please try again');
@@ -165,4 +178,60 @@ async function loadConversation(db_id) {
     } catch (error) {
         console.error('Error while loading conversation: ', error);
     }
+};
+
+// Function to get all chat history from the database and populate the chat history list
+async function populateChatHistory() {
+    try {
+        // Fetch the chat history from the database
+        const response = await fetch('http://localhost:5000/api/conversations/get-id-and-summaries', {
+            method: 'GET'
+        });
+        console.log('Response: ', response);
+
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log('Data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check if the response is OK
+        if (!response.ok) {
+            console.error('Error: ', response.status, data.error);
+            return;
+        }
+
+        // Populate the chat history list
+        const conversationList = data.conversations;
+        console.log('Conversation list: ', conversationList);
+        conversationList.forEach((conversation) => {
+            createChatHistoryElement(conversation._id, conversation.summary);
+        });
+    } catch (error) {
+        console.error('Error while populating chat history: ', error);
+    }
+};
+
+// Function to create a chat-history element
+function createChatHistoryElement(db_id, summary) {
+    // Get the chat history element
+    const chatHistory = document.getElementById('chatHistory');
+    const chatHistoryElement = document.createElement('li');
+    const chatHistoryButton = document.createElement('button');
+
+    // Define the list item properties
+    chatHistoryElement.className = 'chat-history-list-item';
+
+    // Define the button properties
+    chatHistoryButton.type = 'button';
+    chatHistoryButton.className = 'button-chat-history padding-x-5';
+    chatHistoryButton.onclick = () => loadConversation(db_id);
+    chatHistoryButton.innerHTML = summary;
+
+    // Append the button to the list item and the list item to the chat history
+    chatHistoryElement.appendChild(chatHistoryButton);
+    chatHistory.appendChild(chatHistoryElement);
 };

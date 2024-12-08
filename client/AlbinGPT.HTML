@@ -34,25 +34,14 @@
                         </div>
                         
                         <!--Chat History-->
-                        <div class="flex flex-column full-height overflow-y-auto">
-                            <span class="flex padding-x-5">
-                                <p style="font-size: 15px; margin-bottom: 0%; margin-top: 0.75rem;"><b>Chat History</b></p>
+                        <div class="relative flex-column full-height overflow-y-auto">
+                            <span class="relative flex padding-x-5">
+                                <p style="font-size: 15px; margin-bottom: 0%; margin-top: 0.5rem;"><b>Chat History</b></p>
                             </span>
 
-                            <div class="flex full-height">
-                                <ol class="chat-history-list">
-                                    <!-- Chat history items, temporary -->
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat1">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat2">Lorem ipsum dolor sit amet</a>
-                                    </li>
-
-                                    <li class="chat-history-list-item">
-                                        <a class="padding-x-5 button-chat-history" href="#chat3">Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet</a>
-                                    </li>
+                            <div class="relative flex">
+                                <ol id="chatHistory" class="relative chat-history-list">
+                                    <!-- Chat history items go here-->
                                 </ol>
                             </div>
                         </div>
@@ -129,7 +118,7 @@
 
 <script>
     typeOutText('promptText', "Watchu want stoopid?", 60, 1)
-    //typeOutText('promptText-2', "Press 'New Chat' if you want to begin a new chat.", 30)
+    populateChatHistory();
     
     // Temporary function to load an id from the input field in the sidebar
     const loadChat = () => {

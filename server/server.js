@@ -11,7 +11,6 @@ const client = new MongoClient(uri);
 const model = "gpt-4o"; // Specifies the model, e.g. gpt-4o-mini, gpt-4 or gpt-3
 let db;
 let currentId;
-let messagesLoaded = false;
 
 // Check if the required environment variables are set
 const checkEnvVar = (envVar) => {
@@ -125,7 +124,6 @@ app.post('/api/load-conversations', async (req, res) => {
         } else {
             messages = [initializeMessages[0], ...messageHistory];
         }
-        messagesLoaded = true;
         console.log("Messages loaded from db: ", messages);
 
         // Send response to client
@@ -140,7 +138,9 @@ app.get('/api/conversations/get-id-and-summaries', async (req, res) => {
     try {
         const conversationsList = await db.collection("conversations").find({}, { _id: 1, _summary: 1 }).toArray();
         res.status(200).json({ conversations: conversationsList });
-        console.log("Conversation data sent to client: ", conversationsList);
+        
+        // DEBUGGING
+        //console.log("Conversation data sent to client: ", conversationsList);
     } catch (error) {
         console.error("Error retrieving conversation data: ", error);
         res.status(500).json({ error: 'Failed to retrieve conversation data' });
@@ -203,7 +203,7 @@ app.post('/api/chat', async (req, res) => {
             // Insert the conversation into the database
             await conversations.insertOne({ _id: currentId, messages: messageHistory, summary: summary });
             
-            res.status(200).json({ 
+            res.status(201).json({ 
                 content: assistantResponse,
                 summary: summary,
                 db_id: currentId
@@ -236,21 +236,19 @@ app.get('/api/messages', (req, res) => {
 
 // Endpoint to end session
 app.post('/api/end-session', async(req, res) => {
+    // Check if messages have been sent in the current session
     if (messageHistory.length !== 0) {
-        // Reset messages
+        // Reset message history to initialize for the next session
         messageHistory = [];
-        messages = [
-            initializeMessages[0]
-        ];
+        messages = [initializeMessages[0]];
+    }
 
-        if (messagesLoaded) {
-            currentId = await getCurrentId();
-            messagesLoaded = false;
-        }
-
-        if (messageHistory.length > 0) {
-            currentId = await getNextId(); // Increment the currentId for the next conversation
-        }
+    currentId = await getCurrentId();
+    // Check if the currentId exists in the database
+    const conversationExists = await db.collection("conversations").findOne({ _id: currentId });
+    if (conversationExists) {
+        // If it exists, increment the ID to ensure a unique next ID
+        currentId = await getNextId();
     }
     console.log('Next session conversation ID: ', currentId);
     console.log('Session ended');
