@@ -1,3 +1,6 @@
+// Description: JavaScript file for the AlbinGPT chat application
+
+// Function to toggle the sidebar
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openButton = document.getElementById('openSidebarBtn');
@@ -6,11 +9,12 @@ function toggleSidebar() {
     openButton.classList.toggle('hidden');
 };
 
+// Function to type out text in a given element at a set speed
 function typeOutText(elementID, text, speed, chunkSize) {
     return new Promise((resolve) => {
         const element = document.getElementById(elementID);
+        
         let i = 0;
-
         const typeCharacter = () => {
             if (i < text.length) {
                 element.innerHTML += text.substring(i, i + chunkSize);
@@ -24,6 +28,7 @@ function typeOutText(elementID, text, speed, chunkSize) {
     });
 };
 
+// Function to handle the user message
 async function handleMessage() {
     const userMessage = document.getElementById('userMessage').value;
     document.getElementById('userMessage').value = '';
@@ -36,6 +41,7 @@ async function handleMessage() {
     }
 };
 
+// Function to send a message to the server
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
     await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
@@ -47,14 +53,24 @@ async function sendMessage(userMessage) {
             body: JSON.stringify({ userMessage })
         });
 
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log("Parsed data: ", data);
+        } catch (error) {
+            console.error("Error while parsing response: ", error);
+        }
+
+        // Check for errors
         if (!response.ok) {
             if (response.status === 400) {
-                console.error('Bad Request', response.status);
+                console.error('Bad Request', response.status, data.error);
                 return ('Invalid user message format. String expected');
             }
     
             if (response.status === 500) {
-                console.error('Internal Server Error', response.status);
+                console.error('Internal Server Error', response.status, data.error);
                 return ('Internal server error, please try again');
             }
     
@@ -63,10 +79,8 @@ async function sendMessage(userMessage) {
             return (`An error occurred, ${response.statusText}`);
         }
 
+        // Handle the response
         if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            
             if (response.status === 200) {
                 return data.content;
             }
@@ -85,7 +99,40 @@ async function sendMessage(userMessage) {
     }
 };
 
+// Function to clear conversation history
+async function clearChatHistory() {
+    try {
+        const response = await fetch('http://localhost:5000/api/conversations/deleteAll', {
+            method: 'DELETE'
+        });
 
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log('Parsed data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check for errors
+        if (!response.ok) {
+            console.error('Error:', response.status, data.error);
+            return;
+        }
+
+        if (response.ok) {
+            // Clear the chat history list
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.innerHTML = '';
+            console.log('Chat history cleared');
+        }
+    } catch (error) {
+        console.error('Error while clearing chat history: ', error);
+    }
+};
+
+// Function to start a new chat session and end the current one
 async function endSession() {
     try {
         // Open a new chat
@@ -111,17 +158,30 @@ async function checkSession() {
             method: 'GET'
         });
     
-        const data = await response.json();
-        console.log(data);
-        const messages = data.messages;
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log("", data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
         
+        // Check if the response is OK
+        if (!response.ok) {
+            console.error('Error:', response.status, data.error);
+            return;
+        }
+        
+        // Check if there are any messages
+        const messages = data.messages;
         if (messages.length === 0) {
             console.log('No ongoing session');
             return;
         }
-        
         console.log('Messages array: ', messages);
         
+        // Set the block size based on the number of messages
         let blockSize = 10;
         if (messages.length > 5) {
             blockSize = 20;
@@ -159,6 +219,8 @@ async function loadConversation(db_id) {
             body: JSON.stringify({ db_id })
         });
         console.log('Response: ', response);
+
+        // Parse the response
         let data;
         try {
             data = await response.json();
@@ -221,6 +283,7 @@ function createChatHistoryElement(db_id, summary) {
     const chatHistory = document.getElementById('chatHistory');
     const chatHistoryElement = document.createElement('li');
     const chatHistoryButton = document.createElement('button');
+    const previousElement = chatHistory.firstChild; // Get first item in historyList
 
     // Define the list item properties
     chatHistoryElement.className = 'chat-history-list-item';
@@ -233,5 +296,5 @@ function createChatHistoryElement(db_id, summary) {
 
     // Append the button to the list item and the list item to the chat history
     chatHistoryElement.appendChild(chatHistoryButton);
-    chatHistory.appendChild(chatHistoryElement);
+    chatHistory.insertBefore(chatHistoryElement, previousElement); // Insert at the beginning
 };

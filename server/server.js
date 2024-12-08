@@ -234,6 +234,29 @@ app.get('/api/messages', (req, res) => {
     }
 });
 
+// Endpoint to delete the entire database
+app.delete('/api/conversations/deleteAll', async (req, res) => {
+    try {
+        await db.collection("conversations").drop();
+        await db.collection("counters").drop();
+        console.log('Database deleted');
+        
+        // Recreate the counters collection
+        await db.collection("counters").updateOne(
+            { _id: "conversationId" },
+            { $setOnInsert: { currentId: 1 } },
+            { upsert: true }
+        );
+        // Reset the currentId to 1
+        currentId = await getCurrentId();
+
+        res.status(200).json({ message: 'Database deleted' });
+    } catch (error) {
+        console.error('Error deleting database: ', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Endpoint to end session
 app.post('/api/end-session', async(req, res) => {
     // Check if messages have been sent in the current session
@@ -277,11 +300,34 @@ async function startServer() {
     }
 };
 
+// Function to close the server
+async function endSession() {
+    try {
+        // Check if messages have been sent in the current session
+        if (messageHistory.length !== 0) {
+        // Reset message history to initialize for the next session
+        messageHistory = [];
+        messages = [initializeMessages[0]];
+        }
+
+        currentId = await getCurrentId();
+        // Check if the currentId exists in the database
+        const conversationExists = await db.collection("conversations").findOne({ _id: currentId });
+        if (conversationExists) {
+            // If it exists, increment the ID to ensure a unique next ID
+            currentId = await getNextId();
+        }
+        console.log('Next session conversation ID: ', currentId);
+        console.log('Session ended');
+    } catch (error) {
+        console.error("Error ending session: ", error);
+    }
+}
+
 // Handle shutdown gracefully (CTRL + C)
 process.on('SIGINT', async () => {
     console.log('Gracefully shutting down server');
-    currentId = await getNextId();
-    console.log('Conversation ID updated before closing');
+    await endSession();
     await client.close();
     console.log('MongoDB connection closed');
     process.exit(0);
