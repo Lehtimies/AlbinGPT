@@ -136,7 +136,7 @@ async function clearChatHistory() {
 async function endSession() {
     try {
         // Open a new chat
-        window.location.href = 'AlbinGPT-chat.html';
+        window.location.href = '/chat';
         console.log('New chat opened');
 
         // End the session
@@ -236,7 +236,7 @@ async function loadConversation(db_id) {
         console.log(data.message);
         
         // End the current session
-        window.location.href = 'AlbinGPT-chat.html';
+        window.location.href = '/chat';
     } catch (error) {
         console.error('Error while loading conversation: ', error);
     }

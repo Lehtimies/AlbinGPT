@@ -22,9 +22,14 @@ const checkEnvVar = (envVar) => {
 checkEnvVar("OPENAI_API_KEY");
 checkEnvVar("MONGO_URI");
 
-const initializeMessages = [
-    { role: "system", content: "You are Albin, master of the universe and a helpful assistant." },
-];
+// Initialize messages with the system message
+const initializeMessages = [{ 
+    role: "system", 
+    content: `You are Albin, master of the universe and a helpful assistant. 
+        Return answers in plain text, NOT IN MARKDOWN OR LATEX OR ANYTHING LIKE THAT! 
+        Again make sure to return it as plain text, for example math would be returned like this 'x = ±√2', 
+        no '###' for headings or back ticks like '\\' for math/physics or anything that would style the text. Only PLAIN TEXT.` 
+}];
 
 app.use(cors());
 app.use(express.json());
@@ -195,13 +200,17 @@ app.post('/api/chat', async (req, res) => {
                 model: "gpt-4o-mini", // Specifies the gpt model for the summary (Hardcoded cuz it's cheaper (; )
                 messages: [{
                     role: "user", 
-                    content: "Summarize the following sentence into 1-5 words: " + userMessage + ".Remember, only a summary of the sentence. NOT AN ANSWER! Give the summary only in words and not anything else like '?', '.', '!' or flavor text."
+                    content: `Summarize the following sentence into 1-5 words: ` + userMessage + `.
+                    Remember, only a summary of the sentence. NOT AN ANSWER! Give the summary only in words and not 
+                    anything else like '?', '.', '!' or flavor text.`
                 }]
             });
             const summary = summaryResponse.choices[0].message.content;
 
             // Insert the conversation into the database
-            await conversations.insertOne({ _id: currentId, messages: messageHistory, summary: summary });
+            await conversations.insertOne(
+                { _id: currentId, messages: messageHistory, summary: summary }
+            );
             
             res.status(201).json({ 
                 content: assistantResponse,
@@ -209,7 +218,11 @@ app.post('/api/chat', async (req, res) => {
                 db_id: currentId
             });
         } else {
-            conversations.updateOne({ _id: currentId }, { $set: { messages: messageHistory } }, { upsert: true });
+            conversations.updateOne(
+                { _id: currentId }, 
+                { $set: { messages: messageHistory } }, 
+                { upsert: true }
+            );
             // Send response to client
             res.status(200).json({ 
                 content : assistantResponse 
