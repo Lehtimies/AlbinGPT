@@ -61,7 +61,7 @@ mongod --dbpath .\database
 ```
 - Server and Client 
     - With the database initialized you can now start the client and server.
-    - To start the server and client run `npm start` in their respective terminals. The server and client should now be running in two different terminals. The server and AlbinGPT client should be accessible at `http://localhost:5000` and  `http://localhost:3000` respectively by default. <br>
+    - To start the server and client run `npm start` in their respective terminals. The server and client should now be running in two different terminals and should be accessible at `http://localhost:5000` and  `http://localhost:3000` respectively by default. <br>
 
 ## Usage
 
