@@ -1,7 +1,7 @@
 * {
     color: #dfdede;
-    /*scrollbar-color: #535353;*/
-    scrollbar-color: #343434 #202020;
+    scrollbar-color: #515151 #242424;
+    scrollbar-width: thin;
 }
 
 body {
@@ -103,6 +103,12 @@ img.albin {
     width: 0%;
 }
 
+.chat-history-theme {
+    scrollbar-color: #292929 #1a1a1a;
+    scrollbar-gutter: auto;
+    scrollbar-width: thin;
+}
+
 .chat-history-list {
     margin-top: 0.75rem;
     width: 100%;
@@ -115,7 +121,6 @@ img.albin {
     margin-bottom: 0.5rem;
 }
 
-
 .input-field {
     background-color: #1a1a1a;
     box-sizing: border-box;
@@ -126,6 +131,7 @@ img.albin {
     border-radius: 8px;
     width: 85%;
     resize: none;
+    scrollbar-color: #292929 #1a1a1a;
 }
 
 .input-container {
@@ -143,6 +149,19 @@ img.albin {
 
 .input-field:focus {
     outline: none;
+}
+
+.user-output-container {
+    background-color: #1a1a1a;
+    box-sizing: border-box;
+    height: fit-content;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 0 13px #1a1a1a;
+    border-radius: 8px;
+    position: relative;
+    width: fit-content;
+    max-width: 70%;
 }
 
 
@@ -202,6 +221,13 @@ img.albin {
     padding: 1rem;
 }
 
+.padding-top-10 {
+    padding-top: 1rem;
+}
+
+.padding-bottom-25 {
+    padding-bottom: 2.5rem;
+}
 
 .center-flex-items {
     display: flex;

@@ -34,7 +34,7 @@
                         </div>
 
                         <!--Chat History-->
-                        <div class="relative flex-column full-height overflow-y-auto">
+                        <div class="relative flex-column full-height overflow-y-auto chat-history-theme">
                             <span class="relative flex padding-x-5">
                                 <p style="font-size: 15px; margin-bottom: 0%; margin-top: 0.5rem;"><b>Chat History</b></p>
                             </span>
@@ -62,9 +62,10 @@
     <div class="relative flex full-height full-width flex-1 flex-column overflow-hidden">
         <div class="relative flex flex-1 full-height full-width flex-column">
             <!--Top Content-->
-            <div class="relative flex full-width height-fit padding-x-10 padding-y-10 center-flex-items justify-between">
+            <div class="relative flex full-width padding-x-10 padding-top-10 center-flex-items justify-between">
                 <div class="flex justify-between">
                     <span class="flex">
+                        <!-- Fix the small screen scaling later -->
                         <button id="openSidebarBtn" class="button-round hidden w3-hide-small padding-x-10 text-color-2" type="button" onclick="toggleSidebar()">Open Bar</button>
                     </span>
 
@@ -74,14 +75,14 @@
                 </div>
 
                 <span class="flex">
-                    <img src="/icons/Albin.png" class="albin w3-right" alt="Albin">
+                    <img src="/icons/Albin.png" class="albin" alt="Albin">
                 </span>
             </div>
 
             <!--Chat Area-->
-            <div class="relative flex flex-2 full-width full-height padding-x-10 padding-y-10 center-flex-items 
+            <div class="relative flex flex-2 full-width full-height padding-x-10 center-flex-items 
             flex-column justify-between overflow-y-auto">
-                <div class="flex padding-x-15 full-width" style="max-width: 50rem;">
+                <div class="flex padding-x-15 full-width padding-bottom-25" style="max-width: 50rem;">
                     <!--Output Display-->
                     <div class="relative full-width flex wrap-text">
                         <div id="gptOutput" class="full-width"></div>
@@ -90,11 +91,11 @@
             </div>
 
             <!--Input bar-->
-            <div class="static flex-1 center-flex-items" style="max-height: 105px;">
+            <div class="relative flex center-flex-items" style="bottom: 1rem">
                 <div class="full-width" style="max-width: 50rem;">
                     <div class="relative flex full-width center-flex-items">
                         <div class="flex flex-row input-container">
-                            <textarea id="userMessage" class="flex input-field padding-x-10" placeholder="Tell me what's up!"></textarea>
+                            <textarea id="userMessage" class="flex input-field padding-x-10 overflow-y-auto" placeholder="Tell me what's up!"></textarea>
                             <button type="button" onclick="handleMessage()" class="flex-1 button-round" style="margin: 1rem">Send</button>
                         </div>
                     </div>

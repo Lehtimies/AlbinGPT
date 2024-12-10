@@ -35,16 +35,27 @@ async function handleMessage() {
 
     try {
         const assistantResponse = await sendMessage(userMessage);
-        typeOutText('gptOutput', 'Albin: \n' + assistantResponse + '\n \n', 5, 1);
+        typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
 };
 
+async function printUserMessage(userMessage) {
+    // Print the user message to the output
+    const outputElement = document.getElementById('gptOutput');
+    const outputText = document.createElement('div');
+    outputText.className = 'user-output-container';
+    outputText.innerHTML = userMessage;
+    outputElement.appendChild(outputText);
+};
+
 // Function to send a message to the server
 async function sendMessage(userMessage) {
     console.log('User message: ', userMessage);
-    await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
+
+    await printUserMessage(userMessage);
+    //await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
 
     try {
         const response = await fetch('http://localhost:5000/api/chat', {
@@ -194,10 +205,11 @@ async function checkSession() {
         for (const message of messages) {
             switch (message.role) {
                 case 'user':
-                    await typeOutText('gptOutput', 'User: \n' + message.content + '\n \n', 0.1, blockSize);
+                    await printUserMessage(message.content);
+                    //await typeOutText('gptOutput', 'User: \n' + message.content + '\n \n', 0.1, blockSize);
                     break;
                 case 'assistant':
-                    await typeOutText('gptOutput', 'Albin: \n' + message.content + '\n \n', 0.1, blockSize);
+                    await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
                     break;
                 default:
                     console.error('Invalid role: ', message.role);
