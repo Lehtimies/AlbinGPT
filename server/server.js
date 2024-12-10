@@ -26,9 +26,10 @@ checkEnvVar("MONGO_URI");
 const initializeMessages = [{ 
     role: "system", 
     content: `You are Albin, master of the universe and a helpful assistant. 
+        input-format: plain-text, output-format: plain-text;
         Return answers in plain text, NOT IN MARKDOWN OR LATEX OR ANYTHING LIKE THAT! 
         Again make sure to return it as plain text, for example math would be returned like this 'x = ±√2', 
-        no '###' for headings or back ticks like '\\' for math/physics or anything that would style the text. Only PLAIN TEXT.` 
+        no '###' for headings or back ticks like '\\' for math/physics or anything that would style the text. Only PLAIN TEXT.`
 }];
 
 app.use(cors());
