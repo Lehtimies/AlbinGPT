@@ -31,7 +31,15 @@ function typeOutText(elementID, text, speed, chunkSize) {
 // Function to handle the user message
 async function handleMessage() {
     const userMessage = document.getElementById('userMessage').value;
+
+    // Check that message isn't empty
+    if (userMessage.trim().length === 0) {
+        console.log("Message is empty!")
+        return;
+    }
+
     document.getElementById('userMessage').value = '';
+    document.getElementById('userMessage').style.height = 'auto';
 
     try {
         const assistantResponse = await sendMessage(userMessage);

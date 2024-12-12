@@ -127,7 +127,8 @@ img.albin {
     box-shadow: inherit;
     border: none;
     color: #dfdede;
-    height: inherit;
+    min-height: 5rem;
+    max-height: 15rem;
     border-radius: 8px;
     width: 85%;
     resize: none;
@@ -137,7 +138,7 @@ img.albin {
 .input-container {
     background-color: #1a1a1a;
     box-sizing: border-box;
-    height: 5rem;
+    height: fit-content;
     margin-left: 15px;
     margin-right: 15px;
     margin-bottom: 5px;
@@ -233,6 +234,20 @@ img.albin {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.center {
+    margin: auto auto;
+}
+
+.center-x {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center-y {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .width-fit {

@@ -96,7 +96,9 @@
                     <div class="relative flex full-width center-flex-items">
                         <div class="flex flex-row input-container">
                             <textarea id="userMessage" class="flex input-field padding-x-10 overflow-y-auto" placeholder="Tell me what's up!"></textarea>
-                            <button type="button" onclick="handleMessage()" class="flex-1 button-round" style="margin: 1rem">Send</button>
+                            <span class="center">
+                                <button type="button" onclick="handleMessage()" class="flex-1 button-round">Send</button>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -109,6 +111,27 @@
     // Check whether there is an active session and load it
     checkSession();
     populateChatHistory();
+
+    // Event listener to resize input box and send message on Shift + Enter
+    document.addEventListener("DOMContentLoaded", () => {
+        const inputBox = document.getElementById("userMessage")
+
+        // Resize the input box when the user is typing.
+        inputBox.addEventListener("input", () => {
+            inputBox.style.height = "auto"
+            inputBox.style.height = inputBox.scrollHeight + "px"
+        });
+
+        // Check if enter is pressed and send. If shift is down then enter retains default behavior.
+        inputBox.addEventListener("keydown", (event) => {
+            if (event.shiftKey && event.code === 'Enter') {
+                return;
+            } else if (event.code === 'Enter') {
+                event.preventDefault();
+                handleMessage();
+            }
+        });
+    });
 </script>
 
 </body>
