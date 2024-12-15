@@ -30,46 +30,83 @@ function typeOutText(elementID, text, speed, chunkSize) {
 
 // Function to handle the user message
 async function handleMessage() {
-    const userMessage = document.getElementById('userMessage').value;
+    const userInput = document.getElementById('userInput').textContent;
 
     // Check that message isn't empty
-    if (userMessage.trim().length === 0) {
+    if (userInput.trim().length === 0) {
         console.log("Message is empty!")
         return;
     }
 
-    document.getElementById('userMessage').value = '';
-    document.getElementById('userMessage').style.height = 'auto';
+    document.getElementById('userInput').textContent = '';
+    document.getElementById('userInput').style.height = 'auto';
 
     try {
-        const assistantResponse = await sendMessage(userMessage);
+        const assistantResponse = await sendMessage(userInput);
         typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
 };
 
-async function printUserMessage(userMessage) {
+async function printUserMessage(userInput) {
     // Print the user message to the output
     const outputElement = document.getElementById('gptOutput');
     const outputText = document.createElement('div');
-    outputText.className = 'user-output-container';
-    outputText.innerHTML = userMessage;
+    outputText.classList.add('user-output-container');
+    outputText.textContent = userInput;
     outputElement.appendChild(outputText);
 };
 
-// Function to send a message to the server
-async function sendMessage(userMessage) {
-    console.log('User message: ', userMessage);
+// Function to display a pasted image in the imagePreviewContainer
+function displayImage(imgURL) {
+    const container = document.getElementById('imagePreviewContainer');
+    const imageWrapper = document.createElement('div');
+    imageWrapper.classList.add('image-wrapper')
 
-    await printUserMessage(userMessage);
-    //await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
+    // Check if the image container is hidden, if so then make it visible
+    if (container.classList.contains('hidden')) {
+        container.classList.toggle('hidden');
+    }
+
+    // Create the pasted image
+    const img = document.createElement('img');
+    img.src = imgURL;
+    img.alt = 'Pasted Image';
+    img.classList.add('pasted-image');
+
+    // Create the close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerText = 'x';
+    closeBtn.classList.add('image-close-button');
+    closeBtn.onclick = () => {
+        container.removeChild(imageWrapper);
+        // hide the image container if it is empty
+        if (container.innerHTML === '') {
+            container.classList.toggle('hidden');
+        }
+    };
+
+    // Append the image an close button to the wrapper and the wrapper to the container
+    imageWrapper.appendChild(img);
+    imageWrapper.appendChild(closeBtn);
+    container.appendChild(imageWrapper);
+}
+
+// Function to send a message to the server
+async function sendMessage(userInput) {
+    // DEBUGGING
+    console.log('User message:', userInput);
+    console.log('Message type:', typeof userInput);
+    console.log('JSON being sent to server:', JSON.stringify({userInput}));
+
+    await printUserMessage(userInput);
 
     try {
         const response = await fetch('http://localhost:5000/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userMessage })
+            body: JSON.stringify({ userInput })
         });
 
         // Parse the response

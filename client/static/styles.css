@@ -1,11 +1,17 @@
+:root {
+    --main-color: #242424;
+    --secondary-color: #1a1a1a
+}
+
 * {
+    box-sizing: inherit;
     color: #dfdede;
     scrollbar-color: #515151 #242424;
     scrollbar-width: thin;
 }
 
 body {
-    background-color: #242424 !important;
+    background-color: var(--main-color) !important;
     font-family: "Josefin Sans", sans-serif !important;
     font-size: 17px !important;
     height: 100dvh;
@@ -78,9 +84,9 @@ img.albin {
     position: absolute;
     top: 0;
     right: 0;
-    width: 50px; /* Adjust width of fade */
+    width: 50px;    /* Adjust width of fade */
     height: 100%;
-    background: linear-gradient(90deg, transparent, #1a1a1a);
+    background: linear-gradient(90deg, transparent, var(--secondary-color));
     pointer-events: none;
 }
 
@@ -93,7 +99,7 @@ img.albin {
 
 
 .sidebar {
-    background-color: #1a1a1a;
+    background-color: var(--secondary-color);
     z-index: 5;
     width: 270px; 
     transition: all 1s ease;
@@ -104,7 +110,7 @@ img.albin {
 }
 
 .chat-history-theme {
-    scrollbar-color: #292929 #1a1a1a;
+    scrollbar-color: #292929 var(--secondary-color);
     scrollbar-gutter: auto;
     scrollbar-width: thin;
 }
@@ -122,27 +128,42 @@ img.albin {
 }
 
 .input-field {
-    background-color: #1a1a1a;
+    background-color: var(--secondary-color);
     box-sizing: border-box;
     box-shadow: inherit;
     border: none;
     color: #dfdede;
-    min-height: 5rem;
     max-height: 15rem;
     border-radius: 8px;
     width: 85%;
     resize: none;
-    scrollbar-color: #292929 #1a1a1a;
+    scrollbar-color: #292929 var(--secondary-color);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.text-area {
+    background-color: var(--secondary-color);
+    box-sizing: border-box;
+    min-height: 4rem;
+    max-height: 15rem;
+    border-radius: 8px;
+    width: 85%;
+    resize: none;
+    overflow-y: auto;
+    scrollbar-color: #292929 var(--secondary-color);
+    cursor: text;
+    text-decoration: none;
 }
 
 .input-container {
-    background-color: #1a1a1a;
+    background-color: var(--secondary-color);
     box-sizing: border-box;
     height: fit-content;
     margin-left: 15px;
     margin-right: 15px;
     margin-bottom: 5px;
-    box-shadow: 0 0 0 10px #1a1a1a;
+    box-shadow: 0 0 0 10px var(--secondary-color);
     border-radius: 8px;
     position: relative;
     width: 100%;
@@ -150,15 +171,51 @@ img.albin {
 
 .input-field:focus {
     outline: none;
+} 
+
+.imagePreviewContainer {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.pasted-image {
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px #0000007b;
+}
+
+.image-close-button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
 }
 
 .user-output-container {
-    background-color: #1a1a1a;
+    background-color: var(--secondary-color);
     box-sizing: border-box;
     height: fit-content;
     margin-top: 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 0 0 13px #1a1a1a;
+    box-shadow: 0 0 0 13px var(--secondary-color);
     border-radius: 8px;
     position: relative;
     width: fit-content;
@@ -302,6 +359,10 @@ img.albin {
     align-items: flex-start;
 }
 
+.no-margin {
+    margin: 0;
+}
+
 .relative {
     position: relative;
 }
@@ -344,4 +405,8 @@ img.albin {
 
 .justify-center {
     justify-content: center;
+}
+
+.height-fit {
+    height: fit-content;
 }

@@ -155,15 +155,15 @@ app.get('/api/conversations/get-id-and-summaries', async (req, res) => {
 
 // Endpoint to send messages to OpenAI
 app.post('/api/chat', async (req, res) => {
-    const { userMessage } = req.body;
+    const { userInput } = req.body;
 
-    if (!userMessage || typeof userMessage !== 'string') {
+    if (!userInput || typeof userInput !== 'string') {
         return res.status(400).json({ error: 'Invalid user message format. String expected' });
     }
 
     // Append user message to messages
-    messages.push({ role: "user", content: userMessage });
-    messageHistory.push({ role: "user", content: userMessage });
+    messages.push({ role: "user", content: userInput });
+    messageHistory.push({ role: "user", content: userInput });
 
     // Limit messages to 10
     if (messages.length > 10) {
@@ -201,7 +201,7 @@ app.post('/api/chat', async (req, res) => {
                 model: "gpt-4o-mini", // Specifies the gpt model for the summary (Hardcoded cuz it's cheaper (; )
                 messages: [{
                     role: "user", 
-                    content: `Summarize the following sentence into 1-5 words: ` + userMessage + `.
+                    content: `Summarize the following sentence into 1-5 words: ` + userInput + `.
                     Remember, only a summary of the sentence. NOT AN ANSWER! Give the summary only in words and not 
                     anything else like '?', '.', '!' or flavor text.`
                 }]
