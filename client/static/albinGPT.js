@@ -91,7 +91,7 @@ function displayImage(imgURL) {
     imageWrapper.appendChild(img);
     imageWrapper.appendChild(closeBtn);
     container.appendChild(imageWrapper);
-}
+};
 
 // Function to send a message to the server
 async function sendMessage(userInput) {

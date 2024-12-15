@@ -127,13 +127,13 @@
         const userInput = document.getElementById("userInput");
         const inputArea = document.getElementById("inputArea");
         const imagePreviewContainer = document.getElementById("imagePreviewContainer");
-
+        
         // Resize the input box when the user is typing.
         userInput.addEventListener("input", () => {
             userInput.style.height = userInput.scrollHeight + "px";
             userInput.style.height = "auto";
         });
-
+        
         // Check if enter is pressed and send. If shift is down then enter retains default behavior.
         userInput.addEventListener("keydown", (event) => {
             if (event.shiftKey && event.code === 'Enter') {
@@ -143,21 +143,21 @@
                 handleMessage();
             }
         });
-
+        
         // Check if the user is in the input box and then remove the placeholder
         userInput.addEventListener('focus', () => {
             if (userInput.textContent.trim() === '') {
                 userInput.textContent = '';
             }
         });
-
+        
         // Make sure the box is empty when the user leaves the input box
         userInput.addEventListener('blur', () => {
             if (userInput.textContent.trim() === '') {
                 userInput.textContent = '';
             }
         });
-
+        
         // Redirect the user to userInput when they click inside the inputBox
         inputArea.addEventListener("click", () => {
             userInput.focus();
@@ -166,11 +166,18 @@
         // Check if the user pastes an image into the input box
         userInput.addEventListener("paste", (event) => {
             const clipBoardItems = event.clipboardData.items;
-
+            const pastedImageLimit = 5;
+            
             // Check the clipboard for images and display them in the image preview
             for (let item of clipBoardItems) {
                 if (item.type.startsWith("image/")) {
                     event.preventDefault();
+                    // Limit the number of images to 5
+                    if (imagePreviewContainer.childElementCount >= pastedImageLimit) {
+                        console.log("Image limit:", pastedImageLimit);
+                        return;
+                    }
+
                     const blob = item.getAsFile();
                     const tempURL = URL.createObjectURL(blob);
                     displayImage(tempURL);
