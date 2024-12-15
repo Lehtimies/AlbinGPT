@@ -116,6 +116,69 @@ async function getCurrentId() {
     }
 };
 
+// Function to get the filepaths from the firebase image url's
+function getFilePathFromUrl(url) {
+    const decodedUrl = decodeURIComponent(url);
+    const match = decodedUrl.match(/\.app\/(.*)$/); // Match the file path after the .app/ part of the URL
+    if (match && match[1]) {
+        console.log("Extracted file path: ", match[1]);
+        return match[1]; // Return the file path
+    }
+    throw new Error("Invalid Firebase Storage URL");
+};
+
+// Function to delete uploads directory in Firebase storage
+async function deleteAllImageUploads() {
+    try {
+        console.log("Deleting all images in 'uploads/' directory...");
+
+        // Get all files in the uploads directory
+        const [files] = await bucket.getFiles({prefix: "uploads/"}); 
+
+        if (files.length === 0) {
+            console.log("No files found in 'uploads/' directory");
+            return;
+        }
+
+        // Attempt to delete all files in the uploads directory
+        const deleteResults = await Promise.allSettled(
+            files.map((file) =>
+                file.delete().then(() => {
+                    return { filePath: file.name, status: "deleted" };
+                })
+            )
+        );
+
+        // Analyze the results of the deletion operation
+        const success = [];
+        const failures = [];
+
+        deleteResults.forEach((result) => {
+            if (result.status === "fulfilled") {
+                success.push(result.value);
+            } else {
+                failures.push({
+                    // Log the failed deletions
+                    filePath: result.reason.config ? result.reason.config.file : "Unknown",
+                    error: result.reason.message || "Unknown error",
+                });
+            }
+        });
+
+        // Log the results of the deletion operation
+        console.log(`Successfully deleted ${success.length} files`);
+        if (failures.length > 0) {
+            console.error(`Failed to delete ${failures.length} files`);
+            failures.forEach((failure) => {
+                console.error(`Failed to delete file: ${failure.filePath}. Reason: ${failure.error}`);
+            });
+        }
+    } catch (error) {
+        console.error("Error deleting 'uploads/' directory:", error);
+        throw new Error("Failed to delete 'uploads/' directory");
+    }
+};
+
 // Endpoint to upload images to Firebase
 app.post("/api/upload-image", upload.single("file"), async (req,res) => {
     try {
@@ -154,6 +217,37 @@ app.post("/api/upload-image", upload.single("file"), async (req,res) => {
     } catch (error) {
         console.error("Error uploading image to Firebase:", error);
         res.status(500).send("Failed to upload file.");
+    }
+});
+
+// Endpoint to delete images from Firebase storage
+app.delete("/api/delete-images", async (req, res) => {
+    try {
+        const { urls } = req.body; // Should be an array of URLs
+        console.log("URLs to delete:", urls);
+
+        // Check if the URLs are valid
+        if (!Array.isArray(urls)) {
+            return res.status(400).send("Please provide an array of imageURLs");
+        }
+
+        // Extract the file paths from the URLs and delete the files
+        const deletePromises = urls.map(async (url) => {
+            const filePath = getFilePathFromUrl(url);
+            return bucket.file(filePath).delete()
+                .then(() => ({ filePath, status: "deleted" }))
+                .catch((error) => ({ filePath, status: "failed", error: error.message }));
+        });
+
+        // Wait for all the promises to resolve
+        const results = await Promise.all(deletePromises);
+        console.log("Results of image deletion:", results);
+
+        // Send the results to the client
+        return res.status(200).send({ message: "Images deleted", results });
+    } catch (error) {
+        console.error("Error deleting images from Firebase: ", error);
+        res.status(500).send("Failed to delete images.");
     }
 });
 
@@ -319,6 +413,7 @@ app.get("/api/messages", (req, res) => {
 // Endpoint to delete the entire database
 app.delete("/api/conversations/deleteAll", async (req, res) => {
     try {
+        console.log("Deleting database...");
         await db.collection("conversations").drop();
         await db.collection("counters").drop();
         console.log("Database deleted");
@@ -331,6 +426,9 @@ app.delete("/api/conversations/deleteAll", async (req, res) => {
         );
         // Reset the currentId to 1
         currentId = await getCurrentId();
+
+        // Delete all images in the uploads directory
+        await deleteAllImageUploads();
 
         res.status(200).json({ message: "Database deleted" });
     } catch (error) {
