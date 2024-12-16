@@ -189,6 +189,13 @@
 
                     // Display the image in the image preview
                     displayImage(tempURL);
+                } else if (item.type === "text/plain") {
+                    // Prevent the user from pasting text into the input box
+                    event.preventDefault();
+                    item.getAsString((text) => {
+                        console.log("Pasted text:", text);
+                        userInput.textContent += text;
+                    });
                 }
             }
         });

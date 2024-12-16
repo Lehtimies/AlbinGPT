@@ -55,6 +55,7 @@ img.albin {
     display: inline-block;
     font-size: inherit;
     border-radius: 12px;
+    cursor: pointer;
 }
 
 .button-chat-history:hover, .button-round:hover {
@@ -77,6 +78,7 @@ img.albin {
     font-size: inherit;
     border-radius: 8px;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .button-chat-history::after {
@@ -209,7 +211,6 @@ img.albin {
     text-align: center;
 }
 
-/* test values */
 .image-output-container {
     background-color: var(--secondary-color); /* Change to transparent later */
     display: grid;
@@ -247,6 +248,11 @@ img.albin {
     max-width: 70%;
 }
 
+/* Implement later if needed
+.assistant-output-container {
+
+}
+*/
 
 /* General classes*/
 

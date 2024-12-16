@@ -112,7 +112,8 @@
 </div>
 
 <script>
-    typeOutText('promptText', "Watchu want stoopid?", 60, 1)
+    const promptText = document.getElementById("promptText");
+    typeOutText(promptText, "Watchu want stoopid?", 60, 1)
     populateChatHistory();
 </script>
 

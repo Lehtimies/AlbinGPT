@@ -10,14 +10,13 @@ function toggleSidebar() {
 };
 
 // Function to type out text in a given element at a set speed
-function typeOutText(elementID, text, speed, chunkSize) {
+function typeOutText(element, text, speed, chunkSize) {
     return new Promise((resolve) => {
-        const element = document.getElementById(elementID);
-        
         let i = 0;
         const typeCharacter = () => {
             if (i < text.length) {
-                element.innerHTML += text.substring(i, i + chunkSize);
+                //element.innerHTML += text.substring(i, i + chunkSize);
+                element.textContent += text.substring(i, i + chunkSize);
                 i += chunkSize;
                 setTimeout(typeCharacter, speed);
             } else {
@@ -53,11 +52,8 @@ async function handleMessage() {
         imagePreviewContainer.removeChild(imagePreviewContainer.firstChild);
     }
 
-    // TEMPORARY: In the future, the images will remain saved after they're sent to the server
-    deleteImages(userImageUrls);
-    
     // hide the image container if it is empty
-    if (imagePreviewContainer.innerHTML === '') {
+    if (imagePreviewContainer.innerHTML === '' && !imagePreviewContainer.classList.contains('hidden')) {
         imagePreviewContainer.classList.toggle('hidden');
     }
 
@@ -70,11 +66,23 @@ async function handleMessage() {
             printUserImages(userImageUrls);
         }
         printUserMessage(userInput);
-        const assistantResponse = await sendMessage(userInput);
-        typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
+        const assistantResponse = await sendMessage(userInput, userImageUrls);
+        printAsssistantMessage('Albin: \n' + assistantResponse, 1, 2);
+        //typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
+};
+
+async function printAsssistantMessage(assistantResponse, speed, chunkSize) {
+    // Print the assistant message to the output
+    const output = document.getElementById('gptOutput');
+    const assistantMessage = document.createElement('div');
+    assistantMessage.classList.add('assistant-output-container');
+
+    // Append the assistant message to the output
+    output.appendChild(assistantMessage);
+    await typeOutText(assistantMessage, assistantResponse, speed, chunkSize);
 };
 
 function printUserImages(userImageUrls) {
@@ -242,17 +250,26 @@ async function uploadImage(file) {
 }
 
 // Function to send a message to the server
-async function sendMessage(userInput) {
+async function sendMessage(userInput, userImageUrls) {
     // DEBUGGING
     console.log('User message:', userInput);
+    console.log('User images:', userImageUrls);
     console.log('Message type:', typeof userInput);
     console.log('JSON being sent to server:', JSON.stringify({userInput}));
 
+    // Create content object to send to server
+    const content = [{type: "text", text: userInput}];
+    userImageUrls.forEach((url) => {
+        const image = {type: "image_url", image_url: {url}};
+        content.push(image);
+    });
+    console.log('Content object to send:', content);
+
     try {
-        const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch('http://localhost:5000/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userInput })
+            body: JSON.stringify({ content })
         });
 
         // Parse the response
@@ -353,7 +370,7 @@ async function endSession() {
     }
 };
 
-// Function to check whether a session is ongoing
+// Function to check whether a session is ongoing and display the messages if it is
 async function checkSession() {
     try {
         const response = await fetch('http://localhost:5000/api/messages', {
@@ -396,11 +413,22 @@ async function checkSession() {
         for (const message of messages) {
             switch (message.role) {
                 case 'user':
-                    // TODO: Fix when URLS are added
-                    await printUserMessage(message.content);
+                    // Check if the user message contains images and add them to an array
+                    const image_urls = [];
+                    message.content.forEach(async (content) => {
+                        if (content.type === 'image_url') {
+                            image_urls.push(content.image_url.url);
+                        }
+                    });
+                    // Print the user images and message
+                    if (image_urls.length > 0) {
+                        printUserImages(image_urls);
+                    }
+                    printUserMessage(message.content[0].text);
                     break;
                 case 'assistant':
-                    await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
+                    //await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
+                    await printAsssistantMessage('Albin: \n' + message.content, 0.1, blockSize);
                     break;
                 default:
                     console.error('Invalid role: ', message.role);

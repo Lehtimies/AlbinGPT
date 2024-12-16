@@ -45,9 +45,8 @@ const initializeMessages = [{
     role: "system", 
     content: `You are Albin, master of the universe and a helpful assistant. 
         input-format: plain-text, output-format: plain-text;
-        Return answers in plain text, NOT IN MARKDOWN OR LATEX OR ANYTHING LIKE THAT! 
-        Again make sure to return it as plain text, for example math would be returned like this "x = ±√2", 
-        no "###" for headings or back ticks like "\\" for math/physics or anything that would style the text. Only PLAIN TEXT.`
+        Return answers in plain text, NOT IN MARKDOWN OR LATEX! For example math would be returned like this 'x = ±√2', 
+        no '###' for headings or back ticks like '\\' for math/physics or anything that would style the text. Only PLAIN TEXT.`
 }];
 
 app.use(cors());
@@ -59,7 +58,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-let messageHistory = [];    // Store messages for the session
+let messageHistory = []; // Store messages for the session
 
 let messages = [
     initializeMessages[0]
@@ -320,24 +319,18 @@ app.get("/api/conversations/get-id-and-summaries", async (req, res) => {
 
 // Endpoint to send messages to OpenAI
 app.post("/api/chat", async (req, res) => {
-    const { userInput } = req.body;
+    const { content } = req.body;
 
-    if (!userInput || typeof userInput !== "string") {
+    if (!content[0].text || typeof content[0].text !== "string") {
         return res.status(400).json({ error: "Invalid user message format. String expected" });
     }
 
     // Append user message to messages
     messages.push({ 
         role: "user", 
-        content: [
-            { type: "text", text: userInput }, 
-            /*{ 
-                type: "image_url", 
-                image_url: {"url": "https://storage.googleapis.com/albingpt.firebasestorage.app/uploads/1734281861032_math-test-img.PNG"}
-            }*/
-            ] 
+        content: content
         });
-    messageHistory.push({ role: "user", content: userInput });
+    messageHistory.push({ role: "user", content: content });
 
     // Limit messages to 10
     if (messages.length > 10) {
@@ -375,7 +368,7 @@ app.post("/api/chat", async (req, res) => {
                 model: "gpt-4o-mini", // Specifies the gpt model for the summary (Hardcoded cuz it"s cheaper (; )
                 messages: [{
                     role: "user", 
-                    content: `Summarize the following sentence into 1-5 words: ` + userInput + `.
+                    content: `Summarize the following sentence into 1-5 words: ` + content[0].text + `.
                     Remember, only a summary of the sentence. NOT AN ANSWER! Give the summary only in words and not 
                     anything else like "?", ".", "!" or flavor text.`
                 }]
