@@ -7,7 +7,8 @@ ChatGPT Frontend Project using the OpenAI API, specifically GPT-4o when using th
 1. [Technologies](#technologies)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [License](#license)
+4. [Known Bugs](#known-bugs)
+5. [License](#license)
 
 ## Technologies
 
@@ -22,6 +23,8 @@ ChatGPT Frontend Project using the OpenAI API, specifically GPT-4o when using th
 - [Express](https://expressjs.com/) - for building RESTful APIs
 - [Cors](https://www.npmjs.com/package/cors) - to bypass the same-origin policy
 - [MongoDB](https://www.mongodb.com/) - for database management
+- [Firebase](https://firebase.google.com/) - for image file storage
+- [Multer](https://www.npmjs.com/package/multer) - to handle file uploads
 - [OpenAI API](https://platform.openai.com/docs/api-reference/introduction) - to interact with ChatGPT
 
 ## Installation
@@ -31,6 +34,7 @@ ChatGPT Frontend Project using the OpenAI API, specifically GPT-4o when using th
 - NPM
 - MongoDB (local instance)
   - Project built for local installation, further instructions below
+- Firebase 
 
 ### Steps
 1. **Clone the repository**
@@ -48,14 +52,23 @@ git clone https://github.com/Lehtimies/AlbinGPT.git
 	- Installing the [MongoDB Shell](https://www.mongodb.com/try/download/shell) is optional but recommended.
 		- Extract the shell zip-folder in the same directory as MongoDB and add the bin folder to the system path.
 
-4. **Setup Environment Variables** <br>
+4. **Setting up Firebase**
+	- Open the [Firebase console](https://console.firebase.google.com/) and login.
+ 	- Create a new project AlbinGPT (or whatever you want).
+  	- Navigate to storage (located in Build) and follow the instructions to create a bucket that you can use to upload images to.
+   		- Copy the storage bucket address (adress after gs:// in storage) and add it to the `.env` later.
+   	- Create a new private key (Project settings => Service accounts => Generate new private key).
+   		- Rename the key `firebase-service-key.json` and move it to the server directory.
+
+5. **Setup Environment Variables** <br>
 	- Create a `.env` file in the server directory based on the `.env.example` file, and update the necessary fields: <br>
 ```plaintext
 OPENAI_API_KEY=your_openai_api_key
 MONGO_URI=your_mongo_connection_string
+FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
 ```
 
-5. **Run the Application** <br>
+6. **Run the Application** <br>
 The server and client terminals should now be open in separate tabs/windows. You can also open a third terminal and type in `mongosh` to open the MongoDB shell to controll the database, if you have it installed. <br>
 - Database
     - Initialize the database by navigating to the server directory and entering the following commands: <br>
@@ -70,8 +83,13 @@ mongod --dbpath .\database
 ## Usage
 
 1. Start chatting with Albin through the provided interface.
-2. Monitor backend API calls and logs though the server console to ensure smooth operation.
-3. Monitor the database either through mongosh or MongoDB Compass if you installed it.
+2. Paste in up to 5 screenshots to send to Albin for analysis.
+3. Monitor backend API calls and logs though the server console to ensure smooth operation.
+4. Monitor the database either through mongosh or MongoDB Compass if you installed it.
+
+## Known Bugs
+- Spam-pasting images overrides the image limit.
+- The cursor doesn't behave properly when pressing enter at the end of the input message.
 
 ## License
 
