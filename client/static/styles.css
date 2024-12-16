@@ -209,6 +209,31 @@ img.albin {
     text-align: center;
 }
 
+/* test values */
+.image-output-container {
+    background-color: var(--secondary-color); /* Change to transparent later */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 0 13px var(--secondary-color);
+    border-radius: 8px;
+}
+
+.output-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
 .user-output-container {
     background-color: var(--secondary-color);
     box-sizing: border-box;

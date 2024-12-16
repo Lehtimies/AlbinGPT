@@ -164,7 +164,7 @@
         });
         
         // Check if the user pastes an image into the input box
-        userInput.addEventListener("paste", (event) => {
+        userInput.addEventListener("paste", async (event) => {
             const clipBoardItems = event.clipboardData.items;
             const pastedImageLimit = 5;
             
@@ -179,11 +179,44 @@
                     }
 
                     const blob = item.getAsFile();
-                    const tempURL = URL.createObjectURL(blob);
+                    const tempURL = await uploadImage(blob);
+
+                    // Check if the image upload failed
+                    if (tempURL === null) {
+                        console.log("Image upload failed");
+                        return;
+                    }
+
+                    // Display the image in the image preview
                     displayImage(tempURL);
                 }
             }
         });
+    });
+
+    // Event listener to delete images from storage when the user leaves the page
+    window.addEventListener("unload", () => {
+        // Select all images inside image wrappers
+        const images = document.getElementById("imagePreviewContainer").querySelectorAll(".image-wrapper img");
+
+        const urls = [];
+
+        // Collect the src URLs of all valid images
+        images.forEach((img) => {
+            if (img.src) {
+                urls.push(img.src);
+            }
+        });
+
+        console.log("Deleting images:", urls)
+        // Delete the images from storage
+        if (urls.length > 0) {
+            const payload = JSON.stringify({ urls });
+            const endpoint = 'http://localhost:5000/api/delete-images';
+            
+            // Send a beacon request to delete the images
+            navigator.sendBeacon(endpoint, payload); 
+        }
     });
 </script>
 

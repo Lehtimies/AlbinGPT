@@ -52,6 +52,7 @@ const initializeMessages = [{
 
 app.use(cors());
 app.use(express.json());
+app.use(express.text({ type: 'text/plain' })); // For text/plain sent by sendBeacon
 
 // Configure OpenAI
 const openai = new OpenAI({
@@ -186,12 +187,12 @@ app.post("/api/upload-image", upload.single("file"), async (req,res) => {
         console.log("File uploaded:", req.file);
         console.log("Req body:", req.body);
         if (!req.file) {
-            return res.status(400).send("No file uploaded")
+            return res.status(400).send({error: "No file uploaded"})
         }
 
         // Check if the file is an image
         if (!req.file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
-            return res.status(400).send("Please upload an image file")
+            return res.status(400).json({error: "Please upload an image file"})
         }
 
         // Generate a file name
@@ -216,19 +217,30 @@ app.post("/api/upload-image", upload.single("file"), async (req,res) => {
         res.status(200).json({ url: publicUrl });
     } catch (error) {
         console.error("Error uploading image to Firebase:", error);
-        res.status(500).send("Failed to upload file.");
+        res.status(500).json({error: "Failed to upload file."});
     }
 });
 
 // Endpoint to delete images from Firebase storage
-app.delete("/api/delete-images", async (req, res) => {
+app.post("/api/delete-images", async (req, res) => {
     try {
-        const { urls } = req.body; // Should be an array of URLs
+        let body;
+
+        // Check Content-Type to handle parsing correctly
+        if (req.is('application/json')) {
+            body = req.body; // Express already parsed JSON body
+        } else if (req.is('text/plain')) {
+            body = JSON.parse(req.body); // Parse plain text as JSON
+        } else {
+            return res.status(400).json({ error: "Unsupported Content-Type" });
+        }
+
+        const { urls } = body; // Should be an array of URLs
         console.log("URLs to delete:", urls);
 
         // Check if the URLs are valid
         if (!Array.isArray(urls)) {
-            return res.status(400).send("Please provide an array of imageURLs");
+            return res.status(400).json({error: "Please provide an array of image URLs"});
         }
 
         // Extract the file paths from the URLs and delete the files
@@ -244,10 +256,10 @@ app.delete("/api/delete-images", async (req, res) => {
         console.log("Results of image deletion:", results);
 
         // Send the results to the client
-        return res.status(200).send({ message: "Images deleted", results });
+        return res.status(200).json({ message: "Images deleted" });
     } catch (error) {
         console.error("Error deleting images from Firebase: ", error);
-        res.status(500).send("Failed to delete images.");
+        res.status(500).json({error: "Failed to delete images."});
     }
 });
 

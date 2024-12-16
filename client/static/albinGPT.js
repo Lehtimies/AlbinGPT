@@ -31,17 +31,45 @@ function typeOutText(elementID, text, speed, chunkSize) {
 // Function to handle the user message
 async function handleMessage() {
     const userInput = document.getElementById('userInput').textContent;
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const images = imagePreviewContainer.querySelectorAll('.image-wrapper img');
+
+    // Get the image URLs
+    const userImageUrls = [];
+    images.forEach((img) => {
+        if (img.src) {
+            userImageUrls.push(img.src);
+        }
+    });
 
     // Check that message isn't empty
     if (userInput.trim().length === 0) {
         console.log("Message is empty!")
         return;
     }
+    
+    // Clear the image preview container
+    while (imagePreviewContainer.firstChild) {
+        imagePreviewContainer.removeChild(imagePreviewContainer.firstChild);
+    }
+
+    // TEMPORARY: In the future, the images will remain saved after they're sent to the server
+    deleteImages(userImageUrls);
+    
+    // hide the image container if it is empty
+    if (imagePreviewContainer.innerHTML === '') {
+        imagePreviewContainer.classList.toggle('hidden');
+    }
 
     document.getElementById('userInput').textContent = '';
     document.getElementById('userInput').style.height = 'auto';
 
     try {
+        if (userImageUrls.length > 0) {
+            console.log('User images:', userImageUrls);
+            printUserImages(userImageUrls);
+        }
+        printUserMessage(userInput);
         const assistantResponse = await sendMessage(userInput);
         typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
     } catch (error) {
@@ -49,7 +77,25 @@ async function handleMessage() {
     }
 };
 
-async function printUserMessage(userInput) {
+function printUserImages(userImageUrls) {
+    // Print the user images to the output
+    const outputElement = document.getElementById('gptOutput');
+    const outputImages = document.createElement('div');
+    outputImages.classList.add('image-output-container');
+
+    // Create the image elements
+    for (const url of userImageUrls) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Output Image';
+        img.classList.add('output-image');
+        outputImages.appendChild(img);
+    }
+
+    outputElement.appendChild(outputImages);
+}
+
+function printUserMessage(userInput) {
     // Print the user message to the output
     const outputElement = document.getElementById('gptOutput');
     const outputText = document.createElement('div');
@@ -80,7 +126,10 @@ function displayImage(imgURL) {
     closeBtn.innerText = 'x';
     closeBtn.classList.add('image-close-button');
     closeBtn.onclick = () => {
+        // Remove the image from the container and delete it from storage
         container.removeChild(imageWrapper);
+        deleteImages([imgURL]);
+
         // hide the image container if it is empty
         if (container.innerHTML === '') {
             container.classList.toggle('hidden');
@@ -93,14 +142,111 @@ function displayImage(imgURL) {
     container.appendChild(imageWrapper);
 };
 
+// Function to delete one or several images from storage
+async function deleteImages(urls) {
+    try {
+        console.log('Deleting images: ', urls);
+        const response = await fetch('http://localhost:5000/api/delete-images', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls })
+        });
+
+        // Parse the response
+        console.log('Response: ', response);
+        let data;
+        try {
+            data = await response.json();
+            console.log('Parsed data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check for errors
+        if (!response.ok) {
+            if (response.status === 400) {
+                console.error('Bad Request', response.status, data.error);
+                return;
+            }
+    
+            if (response.status === 500) {
+                console.error('Internal Server Error', response.status, data.error);
+                return;
+            }
+    
+            // Default error message
+            console.error('Error', response.status);
+            return;
+        }
+
+        // Handle the response
+        if (response.ok) {
+            if (response.status === 200) {
+                console.log('Images deleted successfully');
+            }
+        }
+    } catch (error) {
+        console.error('Error while deleting images: ', error);
+    }
+};
+
+// Function to upload an image to storage
+async function uploadImage(file) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('http://localhost:5000/api/upload-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log('Parsed data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check for errors
+        if (!response.ok) {
+            if (response.status === 400) {
+                console.error('Bad Request', response.status, data.error);
+                return null;
+            }
+    
+            if (response.status === 500) {
+                console.error('Internal Server Error', response.status, data.error);
+                return null;
+            }
+    
+            // Default error message
+            console.error('Error', response.status);
+            return null;
+        }
+
+        // Handle the response
+        if (response.ok) {
+            if (response.status === 200) {
+                console.log('Image uploaded successfully');
+                return data.url;
+            }
+        }
+
+    } catch (error) {
+        console.error('Error while uploading image: ', error);
+        return null;
+    }
+}
+
 // Function to send a message to the server
 async function sendMessage(userInput) {
     // DEBUGGING
     console.log('User message:', userInput);
     console.log('Message type:', typeof userInput);
     console.log('JSON being sent to server:', JSON.stringify({userInput}));
-
-    await printUserMessage(userInput);
 
     try {
         const response = await fetch('http://localhost:5000/api/chat', {
@@ -250,8 +396,8 @@ async function checkSession() {
         for (const message of messages) {
             switch (message.role) {
                 case 'user':
+                    // TODO: Fix when URLS are added
                     await printUserMessage(message.content);
-                    //await typeOutText('gptOutput', 'User: \n' + message.content + '\n \n', 0.1, blockSize);
                     break;
                 case 'assistant':
                     await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
