@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css?family=Chakra+Petch" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600" rel="stylesheet">
     <style>
+        #userInput:empty:before {
+            content: attr(data-placeholder);
+            opacity: 0.6;
+        }
     </style>
     <script src="albinGPT.js"></script>
 </head>
@@ -95,10 +99,16 @@
                 <div class="full-width" style="max-width: 50rem;">
                     <div class="relative flex full-width center-flex-items">
                         <div class="flex flex-row input-container">
-                            <textarea id="userMessage" class="flex input-field padding-x-10 overflow-y-auto" placeholder="Tell me what's up!"></textarea>
-                            <span class="center">
-                                <button type="button" onclick="handleMessage()" class="flex-1 button-round">Send</button>
-                            </span>
+                            <div id="contentToSend" class="flex flex-column full-width">
+                                <div id="imagePreviewContainer" class="imagePreviewContainer hidden"></div>
+                                <div id="inputArea" class="flex text-area padding-x-10">
+                                    <div id="userInput" class="full-width flex input-field center-y" contentEditable="true" data-placeholder="Hit me up!"></div>
+                                </div>
+                            </div>
+
+                            <div class="center">
+                                <button type="button" onclick="handleMessage()" class="flex button-round">Send</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,18 +122,20 @@
     checkSession();
     populateChatHistory();
 
-    // Event listener to resize input box and send message on Shift + Enter
+    // Event listeners to input box
     document.addEventListener("DOMContentLoaded", () => {
-        const inputBox = document.getElementById("userMessage")
-
+        const userInput = document.getElementById("userInput");
+        const inputArea = document.getElementById("inputArea");
+        const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+        
         // Resize the input box when the user is typing.
-        inputBox.addEventListener("input", () => {
-            inputBox.style.height = "auto"
-            inputBox.style.height = inputBox.scrollHeight + "px"
+        userInput.addEventListener("input", () => {
+            userInput.style.height = userInput.scrollHeight + "px";
+            userInput.style.height = "auto";
         });
-
+        
         // Check if enter is pressed and send. If shift is down then enter retains default behavior.
-        inputBox.addEventListener("keydown", (event) => {
+        userInput.addEventListener("keydown", (event) => {
             if (event.shiftKey && event.code === 'Enter') {
                 return;
             } else if (event.code === 'Enter') {
@@ -131,6 +143,87 @@
                 handleMessage();
             }
         });
+        
+        // Check if the user is in the input box and then remove the placeholder
+        userInput.addEventListener('focus', () => {
+            if (userInput.textContent.trim() === '') {
+                userInput.textContent = '';
+            }
+        });
+        
+        // Make sure the box is empty when the user leaves the input box
+        userInput.addEventListener('blur', () => {
+            if (userInput.textContent.trim() === '') {
+                userInput.textContent = '';
+            }
+        });
+        
+        // Redirect the user to userInput when they click inside the inputBox
+        inputArea.addEventListener("click", () => {
+            userInput.focus();
+        });
+        
+        // Check if the user pastes an image into the input box
+        userInput.addEventListener("paste", async (event) => {
+            const clipBoardItems = event.clipboardData.items;
+            const pastedImageLimit = 5;
+            
+            // Check the clipboard for images and display them in the image preview
+            for (let item of clipBoardItems) {
+                if (item.type.startsWith("image/")) {
+                    event.preventDefault();
+                    // Limit the number of images to 5
+                    if (imagePreviewContainer.childElementCount >= pastedImageLimit) {
+                        console.log("Image limit:", pastedImageLimit);
+                        return;
+                    }
+
+                    const blob = item.getAsFile();
+                    const tempURL = await uploadImage(blob);
+
+                    // Check if the image upload failed
+                    if (tempURL === null) {
+                        console.log("Image upload failed");
+                        return;
+                    }
+
+                    // Display the image in the image preview
+                    displayImage(tempURL);
+                } else if (item.type === "text/plain") {
+                    // Prevent the user from pasting text into the input box
+                    event.preventDefault();
+                    item.getAsString((text) => {
+                        console.log("Pasted text:", text);
+                        userInput.textContent += text;
+                    });
+                }
+            }
+        });
+    });
+
+    // Event listener to delete images from storage when the user leaves the page
+    window.addEventListener("unload", () => {
+        // Select all images inside image wrappers
+        const images = document.getElementById("imagePreviewContainer").querySelectorAll(".image-wrapper img");
+
+        const urls = [];
+
+        // Collect the src URLs of all valid images
+        images.forEach((img) => {
+            if (img.src) {
+                urls.push(img.src);
+            }
+        });
+
+        console.log("Deleting images:", urls)
+        // Delete the images from storage
+        if (urls.length > 0) {
+            const payload = JSON.stringify({ urls });
+            const endpoint = 'http://localhost:5000/api/delete-images';
+            
+            // Send a beacon request to delete the images
+            navigator.sendBeacon(endpoint, payload); 
+        }
     });
 </script>
 

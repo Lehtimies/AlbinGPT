@@ -10,14 +10,13 @@ function toggleSidebar() {
 };
 
 // Function to type out text in a given element at a set speed
-function typeOutText(elementID, text, speed, chunkSize) {
+function typeOutText(element, text, speed, chunkSize) {
     return new Promise((resolve) => {
-        const element = document.getElementById(elementID);
-        
         let i = 0;
         const typeCharacter = () => {
             if (i < text.length) {
-                element.innerHTML += text.substring(i, i + chunkSize);
+                //element.innerHTML += text.substring(i, i + chunkSize);
+                element.textContent += text.substring(i, i + chunkSize);
                 i += chunkSize;
                 setTimeout(typeCharacter, speed);
             } else {
@@ -30,46 +29,247 @@ function typeOutText(elementID, text, speed, chunkSize) {
 
 // Function to handle the user message
 async function handleMessage() {
-    const userMessage = document.getElementById('userMessage').value;
+    const userInput = document.getElementById('userInput').textContent;
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const images = imagePreviewContainer.querySelectorAll('.image-wrapper img');
+
+    // Get the image URLs
+    const userImageUrls = [];
+    images.forEach((img) => {
+        if (img.src) {
+            userImageUrls.push(img.src);
+        }
+    });
 
     // Check that message isn't empty
-    if (userMessage.trim().length === 0) {
+    if (userInput.trim().length === 0) {
         console.log("Message is empty!")
         return;
     }
+    
+    // Clear the image preview container
+    while (imagePreviewContainer.firstChild) {
+        imagePreviewContainer.removeChild(imagePreviewContainer.firstChild);
+    }
 
-    document.getElementById('userMessage').value = '';
-    document.getElementById('userMessage').style.height = 'auto';
+    // hide the image container if it is empty
+    if (imagePreviewContainer.innerHTML === '' && !imagePreviewContainer.classList.contains('hidden')) {
+        imagePreviewContainer.classList.toggle('hidden');
+    }
+
+    document.getElementById('userInput').textContent = '';
+    document.getElementById('userInput').style.height = 'auto';
 
     try {
-        const assistantResponse = await sendMessage(userMessage);
-        typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
+        if (userImageUrls.length > 0) {
+            console.log('User images:', userImageUrls);
+            printUserImages(userImageUrls);
+        }
+        printUserMessage(userInput);
+        const assistantResponse = await sendMessage(userInput, userImageUrls);
+        printAsssistantMessage('Albin: \n' + assistantResponse, 1, 2);
+        //typeOutText('gptOutput', 'Albin: \n' + assistantResponse, 1, 2);
     } catch (error) {
         console.error('Error while sending out message: ', error);
     }
 };
 
-async function printUserMessage(userMessage) {
+async function printAsssistantMessage(assistantResponse, speed, chunkSize) {
+    // Print the assistant message to the output
+    const output = document.getElementById('gptOutput');
+    const assistantMessage = document.createElement('div');
+    assistantMessage.classList.add('assistant-output-container');
+
+    // Append the assistant message to the output
+    output.appendChild(assistantMessage);
+    await typeOutText(assistantMessage, assistantResponse, speed, chunkSize);
+};
+
+function printUserImages(userImageUrls) {
+    // Print the user images to the output
+    const outputElement = document.getElementById('gptOutput');
+    const outputImages = document.createElement('div');
+    outputImages.classList.add('image-output-container');
+
+    // Create the image elements
+    for (const url of userImageUrls) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Output Image';
+        img.classList.add('output-image');
+        outputImages.appendChild(img);
+    }
+
+    outputElement.appendChild(outputImages);
+}
+
+function printUserMessage(userInput) {
     // Print the user message to the output
     const outputElement = document.getElementById('gptOutput');
     const outputText = document.createElement('div');
-    outputText.className = 'user-output-container';
-    outputText.innerHTML = userMessage;
+    outputText.classList.add('user-output-container');
+    outputText.textContent = userInput;
     outputElement.appendChild(outputText);
 };
 
-// Function to send a message to the server
-async function sendMessage(userMessage) {
-    console.log('User message: ', userMessage);
+// Function to display a pasted image in the imagePreviewContainer
+function displayImage(imgURL) {
+    const container = document.getElementById('imagePreviewContainer');
+    const imageWrapper = document.createElement('div');
+    imageWrapper.classList.add('image-wrapper')
 
-    await printUserMessage(userMessage);
-    //await typeOutText('gptOutput', 'User: \n' + userMessage + '\n \n', 5, 1);
+    // Check if the image container is hidden, if so then make it visible
+    if (container.classList.contains('hidden')) {
+        container.classList.toggle('hidden');
+    }
 
+    // Create the pasted image
+    const img = document.createElement('img');
+    img.src = imgURL;
+    img.alt = 'Pasted Image';
+    img.classList.add('pasted-image');
+
+    // Create the close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerText = 'x';
+    closeBtn.classList.add('image-close-button');
+    closeBtn.onclick = () => {
+        // Remove the image from the container and delete it from storage
+        container.removeChild(imageWrapper);
+        deleteImages([imgURL]);
+
+        // hide the image container if it is empty
+        if (container.innerHTML === '') {
+            container.classList.toggle('hidden');
+        }
+    };
+
+    // Append the image an close button to the wrapper and the wrapper to the container
+    imageWrapper.appendChild(img);
+    imageWrapper.appendChild(closeBtn);
+    container.appendChild(imageWrapper);
+};
+
+// Function to delete one or several images from storage
+async function deleteImages(urls) {
     try {
-        const response = await fetch('http://localhost:5000/api/chat', {
+        console.log('Deleting images: ', urls);
+        const response = await fetch('http://localhost:5000/api/delete-images', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userMessage })
+            body: JSON.stringify({ urls })
+        });
+
+        // Parse the response
+        console.log('Response: ', response);
+        let data;
+        try {
+            data = await response.json();
+            console.log('Parsed data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check for errors
+        if (!response.ok) {
+            if (response.status === 400) {
+                console.error('Bad Request', response.status, data.error);
+                return;
+            }
+    
+            if (response.status === 500) {
+                console.error('Internal Server Error', response.status, data.error);
+                return;
+            }
+    
+            // Default error message
+            console.error('Error', response.status);
+            return;
+        }
+
+        // Handle the response
+        if (response.ok) {
+            if (response.status === 200) {
+                console.log('Images deleted successfully');
+            }
+        }
+    } catch (error) {
+        console.error('Error while deleting images: ', error);
+    }
+};
+
+// Function to upload an image to storage
+async function uploadImage(file) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('http://localhost:5000/api/upload-image', {
+            method: 'POST',
+            body: formData
+        });
+
+        // Parse the response
+        let data;
+        try {
+            data = await response.json();
+            console.log('Parsed data: ', data);
+        } catch (error) {
+            console.error('Error while parsing response: ', error);
+        }
+
+        // Check for errors
+        if (!response.ok) {
+            if (response.status === 400) {
+                console.error('Bad Request', response.status, data.error);
+                return null;
+            }
+    
+            if (response.status === 500) {
+                console.error('Internal Server Error', response.status, data.error);
+                return null;
+            }
+    
+            // Default error message
+            console.error('Error', response.status);
+            return null;
+        }
+
+        // Handle the response
+        if (response.ok) {
+            if (response.status === 200) {
+                console.log('Image uploaded successfully');
+                return data.url;
+            }
+        }
+
+    } catch (error) {
+        console.error('Error while uploading image: ', error);
+        return null;
+    }
+}
+
+// Function to send a message to the server
+async function sendMessage(userInput, userImageUrls) {
+    // DEBUGGING
+    console.log('User message:', userInput);
+    console.log('User images:', userImageUrls);
+    console.log('Message type:', typeof userInput);
+    console.log('JSON being sent to server:', JSON.stringify({userInput}));
+
+    // Create content object to send to server
+    const content = [{type: "text", text: userInput}];
+    userImageUrls.forEach((url) => {
+        const image = {type: "image_url", image_url: {url}};
+        content.push(image);
+    });
+    console.log('Content object to send:', content);
+
+    try {
+            const response = await fetch('http://localhost:5000/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
         });
 
         // Parse the response
@@ -170,7 +370,7 @@ async function endSession() {
     }
 };
 
-// Function to check whether a session is ongoing
+// Function to check whether a session is ongoing and display the messages if it is
 async function checkSession() {
     try {
         const response = await fetch('http://localhost:5000/api/messages', {
@@ -213,11 +413,22 @@ async function checkSession() {
         for (const message of messages) {
             switch (message.role) {
                 case 'user':
-                    await printUserMessage(message.content);
-                    //await typeOutText('gptOutput', 'User: \n' + message.content + '\n \n', 0.1, blockSize);
+                    // Check if the user message contains images and add them to an array
+                    const image_urls = [];
+                    message.content.forEach(async (content) => {
+                        if (content.type === 'image_url') {
+                            image_urls.push(content.image_url.url);
+                        }
+                    });
+                    // Print the user images and message
+                    if (image_urls.length > 0) {
+                        printUserImages(image_urls);
+                    }
+                    printUserMessage(message.content[0].text);
                     break;
                 case 'assistant':
-                    await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
+                    //await typeOutText('gptOutput', 'Albin: \n' + message.content, 0.1, blockSize);
+                    await printAsssistantMessage('Albin: \n' + message.content, 0.1, blockSize);
                     break;
                 default:
                     console.error('Invalid role: ', message.role);
