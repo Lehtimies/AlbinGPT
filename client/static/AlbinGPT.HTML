@@ -6,7 +6,6 @@
     <link rel="icon" href="/icons/Albin.png">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link href="https://fonts.googleapis.com/css?family=Chakra+Petch" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600" rel="stylesheet">
     <style>
@@ -17,7 +16,7 @@
 
 <div class="relative full-height full-width flex overflow-hidden z-0">
     <!-- Sidebar -->
-    <div id="sidebar" class="flex-shrink-0 overflow-hidden sidebar w3-hide-small">
+    <div id="sidebar" class="sidebar">
         <div class="full-height" style="width: 270px;">
             <div class="flex full-height flex-column min-height-0">
                 <div class="relative flex-1 full-height full-width items-start">
@@ -34,13 +33,13 @@
                         </div>
                         
                         <!--Chat History-->
-                        <div class="relative flex-column full-height overflow-y-auto chat-history-theme">
+                        <div class="chat-history-theme">
                             <span class="relative flex padding-x-5">
                                 <p style="font-size: 15px; margin-bottom: 0%; margin-top: 0.5rem;"><b>Chat History</b></p>
                             </span>
 
                             <div class="relative flex">
-                                <ol id="chatHistory" class="relative chat-history-list">
+                                <ol id="chatHistory" class="chat-history-list">
                                     <!-- Chat history items go here-->
                                 </ol>
                             </div>
@@ -65,7 +64,7 @@
             <div class="relative flex full-width padding-x-10 padding-top-10 center-flex-items justify-between">
                 <div class="flex justify-between">
                     <span class="flex">
-                        <button id="openSidebarBtn" class="button-round hidden w3-hide-small padding-x-10 text-color-2" type="button" onclick="toggleSidebar()">Open Bar</button>
+                        <button id="openSidebarBtn" class="button-round hidden padding-x-10 text-color-2" type="button" onclick="toggleSidebar()">Open Bar</button>
                     </span>
 
                     <span class="flex">
@@ -84,11 +83,11 @@
                 <div class="padding-x-15 full-width">
                     <!--Welcome text-->
                     <div class="relative flex center-flex-items">
-                        <p id="promptText" class="w3-center" style="font-size: xx-large; margin: 0%;"></p>
+                        <p id="promptText" style="font-size: xx-large; margin: 0%;"></p>
                     </div>
     
                     <div class="padding-y-5 relative flex center-flex-items">
-                        <p id="promptText-2" class="w3-center">Press 'New Chat' if you want to begin a new chat.</p>
+                        <p id="promptText-2">Press 'New Chat' if you want to begin a new chat.</p>
                     </div>
 
                     <div class="relative flex center-flex-items flex-row justify-center">

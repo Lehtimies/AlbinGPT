@@ -8,12 +8,13 @@
     color: #dfdede;
     scrollbar-color: #515151 #242424;
     scrollbar-width: thin;
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
 }
 
 body {
-    background-color: var(--main-color) !important;
-    font-family: "Josefin Sans", sans-serif !important;
-    font-size: 17px !important;
+    background-color: var(--main-color);
     height: 100dvh;
     width: 100dvw;
     margin: 0;
@@ -39,6 +40,17 @@ code {
 img.albin {
     width: 2.5rem;
     height: 2.5rem;
+}
+
+/* Temp screen sizing fix */
+@media (max-width: 768px) {
+    #sidebar {
+        display: none;
+    }
+
+    #openSidebarBtn {
+        display: none;
+    }
 }
 
 
@@ -105,6 +117,8 @@ img.albin {
     z-index: 5;
     width: 270px; 
     transition: all 1s ease;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .sidebar-hidden {
@@ -112,12 +126,17 @@ img.albin {
 }
 
 .chat-history-theme {
+    position: relative;
     scrollbar-color: #292929 var(--secondary-color);
     scrollbar-gutter: auto;
     scrollbar-width: thin;
+    overflow-y: auto;
+    height: 100%;
+    flex-direction: column;
 }
 
 .chat-history-list {
+    position: relative;
     margin-top: 0.75rem;
     width: 100%;
     padding: 0;
@@ -364,10 +383,6 @@ img.albin {
 
 .flex {
     display: flex;
-}
-
-.flex-shrink-0 {
-    flex-shrink: 0;
 }
 
 .flex-1 {

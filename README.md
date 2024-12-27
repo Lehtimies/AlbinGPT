@@ -13,8 +13,7 @@ ChatGPT Frontend Project using the OpenAI API, specifically GPT-4o when using th
 ## Technologies
 
 ### Frontend
-- No frontend framework (because I didn't know any better and didn't think I'd need one initially)
-- W3 CSS to tie some stuff together
+- No frontend framework (because I didn't think I'd need one initially)
 - My own HTML, CSS and Javascript
 - [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/) server to run client in localhost
 
@@ -54,11 +53,11 @@ git clone https://github.com/Lehtimies/AlbinGPT.git
 
 4. **Setting up Firebase**
 	- Open the [Firebase console](https://console.firebase.google.com/) and login.
- 	- Create a new project AlbinGPT (or whatever you want).
+ 	- Create a new project AlbinGPT (or whatever you want to call it).
   	- Navigate to storage (located in Build) and follow the instructions to create a bucket that you can use to upload images to.
    		- Copy the storage bucket address (adress after gs:// in storage) and add it to the `.env` later.
    	- Create a new private key (Project settings => Service accounts => Generate new private key).
-   		- Rename the key `firebase-service-key.json` and move it to the server directory.
+   		- Rename the key to `firebase-service-key.json` and move it to the server directory.
 
 5. **Setup Environment Variables** <br>
 	- Create a `.env` file in the server directory based on the `.env.example` file, and update the necessary fields: <br>
