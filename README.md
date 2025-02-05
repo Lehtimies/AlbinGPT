@@ -2,6 +2,9 @@
 
 ChatGPT Frontend Project using the OpenAI API, specifically GPT-4o when using the project's standard settings. <br> <br> This projects was primarily made to learn how to make use of HTML, CSS and Javascript to make a mostly static website with some dynamic elements, but also how to use Javascript on the backend with Node.js and create/control databases with MongoDB.
 
+Live Demo (Frontend only): https://lehtimies.github.io/AlbinGPT-Frontend/
+Note: This demo is only for the frontend, so no chat functionality is available unfortunately.
+
 ## Table of Contents
 
 1. [Technologies](#technologies)
